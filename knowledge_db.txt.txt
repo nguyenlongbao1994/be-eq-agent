@@ -1,0 +1,294 @@
+==================================================
+[BE SYSTEM TRAINING – FOUNDATION]
+==================================================
+
+Flow chuẩn BE:
+Water Clean → Baking → Plasma → Molding → Laser → Dry Ice → Plasma → CPF → Curing → Jigsaw → Tape → Sputter → AVI
+
+Core rule:
+- Không chẩn đoán cục bộ
+- Luôn kiểm upstream + downstream
+- Không default machine breakdown nếu chưa loại trừ process / interface
+
+Failure nature:
+- Phần lớn lỗi là:
+  - process instability
+  - detection gap
+  - mechanical wear
+  - system interaction
+  - human operation
+
+Failure chain:
+Small issue → misalignment → drop → stacking → collision → defect
+
+==================================================
+[STATION KNOWLEDGE]
+==================================================
+
+[Water Clean]
+- Core process ổn định
+- Không phải trạm gây lỗi chính
+
+Focus:
+- Loader / unloader (đời cũ)
+- Transfer interface
+- Scanner robustness
+
+Rule:
+- Không đổ lỗi WC nếu chưa có evidence bề mặt / handshake
+
+--------------------------------------------------
+
+[CPF]
+- Main risk: glue instability (KHÔNG phải collision)
+
+Focus:
+- glue overflow
+- dot weight variation
+- valve / chamber wear
+- nozzle trial
+- process margin
+
+Rule:
+- FAI pass ≠ process stable
+
+--------------------------------------------------
+
+[Molding]
+- System đa module:
+  - handling
+  - transfer
+  - press
+  - vacuum
+  - compound supply
+
+Logic:
+- transfer abnormal → check mold incomplete / foreign material
+- vacuum abnormal → check mold side FIRST
+- output NG but machine OK → check mold surface
+- no input > 12h → must re-FAI
+
+--------------------------------------------------
+
+[Jigsaw]
+- Blade:
+  - Machine 58: ~700 panel
+  - Others: ~500 panel
+
+- Brush:
+  - replace every 108000 cycles
+  - function: remove debris
+
+- Cleaning:
+  - 100% RO fresh water
+  - no recycle
+
+- Calibration:
+  - every 3 months
+
+Risk:
+- blade wear → crack / burr
+- chuck wear → micro crack
+
+--------------------------------------------------
+
+[Water Clean Chemical Control]
+- N600: replace every 2 weeks
+- Filter: 1–2 weeks
+
+--------------------------------------------------
+
+[Process Flow Rule]
+- LTE → must go CDIC
+- GPS → skip CDIC → go sputter
+- Over Q-time → must curing again before sputter
+
+==================================================
+[EQUIPMENT]
+==================================================
+
+AM100 (PnP):
+- Model: NM-EJM4D
+- Dimension: 1970 × 2105 × 1500 mm
+- Weight: 2780 kg
+- Power: 3-phase AC 200–480V, 2.0 kVA
+- Air: 0.5–0.8 MPa, 200 L/min
+- Speed: 35800 cph
+- Accuracy: ±40 µm
+
+CCM-A201 (Intelume Dry Ice):
+- Fully automatic dry ice cleaning machine
+- Clean residue after laser
+- Dual nozzle
+- Integrated:
+  - dust collection
+  - heating
+  - hot air circulation
+  - product clamping
+- Risk: condensation / frost
+- Facility: NOT AVAILABLE
+
+Hans Laser (HDZ-GL4030):
+- Spec not available
+- Need installation manual
+
+Laser system:
+- CT instability (vision NG)
+- cooling connector fragile
+
+==================================================
+[ISSUE DATABASE]
+==================================================
+
+[Cold Jet #22]
+Symptom:
+- kg drop below spec
+- intermittent
+
+Mechanism:
+- unstable flow (pressure + temp + feed)
+- partial freezing
+
+Root cause:
+1. dry ice quality variation
+2. partial nozzle freezing
+3. CDA fluctuation
+
+Quick check:
+- change dry ice
+- purge system
+- check air pressure real-time
+- run ≥3 cycles
+
+Impact:
+- cleaning NG
+- yield risk
+- hard to detect
+
+Action:
+- purge before run
+- clean nozzle
+- log kg trend
+
+--------------------------------------------------
+
+[Mold 147 Press 2]
+Symptom:
+- abnormal during cleaning
+
+Mechanism:
+- pin drop / contamination
+
+Risk:
+- mold damage
+
+Action:
+- isolate
+- fix pin
+- monitor daily
+
+==================================================
+[AUTOMATION / SFIS]
+==================================================
+
+Plasma 3:
+- data send → OK
+- IT routing → NOT DONE
+- not online
+
+System:
+- Baymax ↔ machine
+- TCP/IP
+- send product string
+
+Risk:
+- missing traceability
+- integration incomplete
+
+==================================================
+[WATCH – CURRENT LINE]
+==================================================
+
+Key points:
+
+- Cold Jet #22 unstable
+- Laser CT unstable (vision NG)
+- Plasma 3 not online (SFIS incomplete)
+- Jigsaw wear control needed
+- Mold 147 monitoring
+- Dry run ongoing
+
+Conclusion:
+→ issue mainly process/system
+→ NOT hardware failure
+
+==================================================
+[HANA PROJECT]
+==================================================
+
+Context:
+- share line with Watch
+
+Machine status:
+- 대부분 machine already available
+- Exception: Vacuum baking → need transfer
+
+Lab equipment missing (~8 weeks):
+- J-Link Pro
+- I2C/SPI board
+- Battery simulator
+- Chamber
+
+Risk:
+- capacity conflict (share with Watch)
+- readiness gap
+- ramp delay
+
+Readiness classification:
+1. Machine available
+2. Need transfer
+3. Need new buy
+4. Share → need capacity control
+
+==================================================
+[DRY RUN CONTROL]
+==================================================
+
+Schedule:
+- 09:00–11:00 → Molding → AVI
+- 13:00–14:00 → Plasma → CPF
+- 15:00–16:30 → Laser flow
+
+Control:
+- record CT
+- track issue time
+- log input quantity
+- manual fallback allowed
+
+==================================================
+[FAILURE PRIORITY LOGIC]
+==================================================
+
+Troubleshooting order:
+
+1. Mold / mechanical
+2. Transfer / positioning
+3. Sensor / detection
+4. Control / actuator
+5. Process condition
+6. Human factor
+7. Automation / IT / integration (if auto line)
+
+==================================================
+[CI – IMPROVEMENT]
+==================================================
+
+- Cold Jet → purge + repeatability check
+- Plasma → verify direction before install
+- Laser → protect connector
+- Vision → add FAI stability check
+- SFIS → define connection checklist
+
+==================================================
+END
+==================================================
