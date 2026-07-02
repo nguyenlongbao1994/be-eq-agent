@@ -767,7 +767,523 @@ Laser #177 – peeling	Laser EQLAS00177	Peeling	Unknown interface	Investigate up
 DryIce23 – false alarm	Dry Ice EQDIC00023	False alarm	Signal mismatch	Check mapping	IT	Medium
 DIC#028 – SIP drop	Dry Ice EQDIC00028	SIP drop	Clamp misalign	Re-teach	Mechanical	Medium
 DIC#040 – SIP crack	Dry Ice EQDIC00040	SIP crack	Clamp imbalance	Rebalance	Mechanical	High
+01/06/2026
+Laser / Lift interface issue
 
+Machine #232
+During LBO run, one panel dropped inside machine
+Failure mechanism:
+
+SMD lift malfunctioned
+laser did not receive error signal
+transfer continued
+panel fell to machine bottom
+
+
+Issue type:
+
+Sensor / Control / Transfer failure
+
+
+Risk:
+
+panel damage
+missing interlock / handshake logic
+
+
+
+Molding training kick-off
+
+Training targets:
+
+alarm troubleshooting
+advanced troubleshooting
+model change
+production monitoring + practice
+
+
+Core learnings captured:
+
+transfer pressure/time abnormal → suspect mold incomplete / foreign material / abnormal pressing force
+vacuum abnormal → suspect mold side first
+model change → verify mold chase / PR set / recipe
+no input > 12h → redo FAI
+
+
+
+
+11/06/2026 (date embedded in case file title and event context)
+Laser232 panel dropped case
+
+Similar issue logged from presentation/report:
+
+lift alarm not transferred to laser
+laser completed cycle and unloaded normally
+panel dropped between machines
+
+
+Direction:
+
+Laser–lift communication issue
+interlock / handshake logic gap
+
+
+
+
+13/06/2026
+General line note
+
+Checked conveyor maintenance items
+Checked CPF glue replacement
+Machine 158 – Press 2 force ~54 ton
+Laser:
+
+modified PLC logic for loader / unloader signal
+retested
+
+
+
+Correction
+
+At first there was confusion with “mold” in note reading
+Final correction:
+
+this day contained machine / CPF / laser notes
+not a mold note by itself
+
+
+
+
+15/06/2026
+Laser Hans training
+
+Main learning:
+
+loader / unloader PLC signal logic
+retest after modification
+
+
+Laser station understanding:
+
+2 machine types: HANS + E&R
+same laser source type
+
+
+30 machines total
+
+
+machine consists of:
+
+load/unload
+dust extraction
+cooling
+laser head
+working table
+
+
+
+
+Key technical learning:
+
+most critical parts:
+
+laser head
+working table
+
+
+hardest adjustment:
+
+laser optical path
+
+
+calibration:
+
+every 6 months or when running new model
+
+
+
+
+35,000 h → inspect / prepare replacement
+
+
+
+
+40,000 h → mandatory replacement
+
+
+software:
+
+two programs:
+
+laser source control
+machine control
+
+
+Spectra source software at 102000 Hz
+
+
+directly linked with SFIS
+DataMatrix code, no manual code input
+water cooling required for laser head
+
+
+
+
+18/06/2026
+General line / day note
+
+Molding / mold chase:
+
+change mold before FR4 run still under check
+
+
+Oven:
+
+over-temperature protection issue
+setup too low → cannot reach required temperature
+
+
+Water Clean:
+
+carrier QR codes not consistent
+scanner not yet arrived
+currently handling by carrier classification
+
+
+Laser 222:
+
+cold jet out of spec
+adjusted and FAI = OK
+
+
+Jig Saw:
+
+product code cannot be read
+suspected relation to DIC cleaning / surface not clean enough
+
+
+Automation Hades:
+
+inline plasma has arrived at USI
+layout / installation in progress
+one before molding
+one before CPF
+
+
+
+
+22/06/2026
+Cutting / Trench Dry Ice training day
+Training focus:
+
+startup flow
+parameter logic
+maintenance pages
+alarm logic
+scanner / InteChip / Running System / SFIS support
+
+Practical notes
+
+Plasma 3:
+
+setup completed
+
+
+Auto shuttle:
+
+fault fixed, note indicates OK after recovery
+
+
+Laser cutting:
+
+dust collector hose bent
+
+
+Sputter:
+
+part reassembled but screw loose
+
+
+FAI / check sheet:
+
+first-shift FAI for DL2
+
+
+Learning:
+
+Cold Jet pressure must not be adjusted freely
+must follow machine spec
+in/out by magazine
+dust collector suction must be sufficient
+pedestal / vacuum at machine side must be checked
+
+
+
+
+23/06/2026
+Daily issue / PM / verification
+
+Plasma 2:
+
+setup completed
+
+
+WC79:
+
+scanner connection issue
+
+
+Laser 153:
+
+6-month PM done
+no special issue found
+
+
+Dry Ice 22:
+
+mask changed
+check OK
+check sheet completed
+
+
+Automation line:
+
+laser stress test performed
+
+
+Saw 58:
+
+output/handling-related issue noted
+
+
+SOP:
+
+updated through DCN-controlled document system
+
+
+Sputter:
+
+internal screws fully replaced
+
+
+
+DCN logic clarified
+
+Any new checklist / form / added verification item must be updated through controlled documentation
+Must have:
+
+document number
+revision
+controlled release
+
+
+FAI / checklist must only be ticked after actual verification is completed
+
+
+24/06/2026
+Machine / process note
+
+Mold 146
+
+pin dropped
+risk: falling onto mold chase surface and damaging it
+fixed with glue
+daily monitoring in place
+
+
+CPF:
+
+Z-axis abnormality
+
+
+Laser 230:
+
+quarterly PM
+actual CT around 11–15 seconds
+
+
+Hades auto line:
+
+Laser CB cannot detect PCB mark
+
+
+TDIC #43:
+
+vacuum / dust filter issue
+
+
+Plasma 3:
+
+optimizing QR scanner
+
+
+
+
+25/06/2026
+Automation line integration / utility
+
+Plasma 2 automation line:
+
+machine base needs modification due to reverse direction
+target completion: 01/07
+
+
+WC37:
+
+pressure drop
+nozzle not clogged
+
+
+Laser:
+
+PD broke cooling water connector
+replaced and machine OK
+
+
+Cold Jet:
+
+tuning / verification
+FAI = 167 kg
+actual peak = 172
+
+
+SFIS / Baymax / TCP-IP:
+
+new plasma automation line
+port for sending product data string to system
+
+
+
+
+26/06/2026
+Maintenance + dry run
+
+WC:
+
+1M / 3M / 6M PM checks
+
+
+TDIC:
+
+Cold Jet changed from #22 to #26
+checked dry ice pipe
+cleaned nozzle
+#22 often has weight drop below spec despite no HW/SW change
+
+
+Jig Saw:
+
+PM + belt check
+
+
+CDIC:
+
+checked all tool / part / mask / pedestal
+
+
+
+Dry run
+
+10:00:
+
+dry run for Molding 157 + robot
+
+
+Initial:
+
+only 10% running because Plasma 2 setup not finished
+
+
+10:30:
+
+setup done
+
+
+Laser CB:
+
+one machine still causes higher CT
+
+
+Plasma 3:
+
+SFIS software still not fully fixed
+
+
+14:34:
+
+moved to CPF auto line
+
+
+
+
+29/06/2026
+Molding / Saw / Process flow
+
+Mold 147 Press 2:
+
+abnormal during cleaning
+while preparing for Automation Hades FRB
+isolated and under investigation
+
+
+
+Jigsaw
+
+4 sets available
+currently 3 sets for C10
+machine 58 + 72 running small model
+FAI at 10:30:
+
+no issue
+
+
+blade:
+
+machine 58 ~700 panels/change
+others ~500 panels/change
+
+
+blade thickness:
+
+0.63 mm
+
+
+full table calibration:
+
+every 3 months
+
+
+cleaning:
+
+100% fresh RO water
+no recycle
+direct discharge
+
+
+brush:
+
+replace every 108000 runs
+plastic cleaning brush for removing saw debris
+
+
+
+Process flow learnings
+
+LTE must pass CDIC
+GPS can go directly to sputter
+Over Q-time before sputter → must cure again
+
+Line status
+
+By 14:00:
+
+saw WIP cleared
+
+
+Automation line bypass run:
+
+no issue
+but plasma and sputter load/unload not running at that time
 
 END
 ==================================================
