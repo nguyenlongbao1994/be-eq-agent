@@ -1,27 +1,3 @@
-# BE EQ Knowledge Base
-
-## Cold Jet #22
-- Output drop issue
-- Root cause:
-  - dry ice quality
-  - nozzle freezing
-  - CDA fluctuation
-
-## Plasma 3 SFIS
-- Data send: OK
-- Routing: NOT DONE
-- Not online
-
-## Jigsaw
-- Blade:
-  - Machine 58: 700 panels
-  - Others: 500 panels
-- Brush: 108000 cycles
-
-## Mold 147
-- Press 2 abnormal
-- Under monitoring
-==================================================
 [BE SYSTEM TRAINING – FOUNDATION]
 ==================================================
 
@@ -331,15 +307,15 @@ A key learning point is that Laser release is not only a recipe check. The techn
 
 This afternoon, the main task is to complete FAI and restart production using the current technical baseline: Laser power/vacuum/air/chiller condition and Dry Ice nozzle/feed condition, while confirming that all actual values are aligned with the product-specific FAI/MOI before releasing the line back to MP."
 
-"Today’s training focused on the Cutting Dry Ice Clean manual flow, including program confirmation, gas condition, initialization, software operation (Running System / InteChip), and the main process parameters and maintenance/log pages used for troubleshooting.
-Based on today’s line notes, the main follow-up items were mold-chase readiness before FR4 run, oven over-temperature protection setup, QR code / scanner compatibility at WC, Laser 222 cold-jet out-of-spec recovery with FAI OK, and Jig Saw read-code issue related to unclean DIC surface condition.
+Training focused on the Cutting Dry Ice Clean manual flow, including program confirmation, gas condition, initialization, software operation (Running System / InteChip), and the main process parameters and maintenance/log pages used for troubleshooting.
+Based on line notes, the main follow-up items were mold-chase readiness before FR4 run, oven over-temperature protection setup, QR code / scanner compatibility at WC, Laser 222 cold-jet out-of-spec recovery with FAI OK, and Jig Saw read-code issue related to unclean DIC surface condition.
 The key learning is that Cutting Dry Ice must be controlled as a full system including recipe, gas, dry ice supply, scanner/software, and module-to-module handling, not only the dry ice spray section.
 Today’s follow-up covered multiple BE issues across Molding, Oven, Water Clean, Laser, Jig Saw, and the Hades automation line.
 A key update is that the inline plasma machines for the Hades automation line have already arrived at USI and are currently under installation/layout, with one unit before Molding and one unit before CPF.
 This is an important integration step because the new inline plasma setup will directly affect surface preparation before both molding and glue dispensing processes."
 
 "-Cutting/Trench Dry Ice, focusing on startup flow, key process parameters, alarm handling, and how to use maintenance/log pages in the system for troubleshooting.
--On-line notes today highlighted several follow-up items, including Plasma 3 setup verification, Auto shuttle recovery, a bent dust collector hose in laser cutting, loose screw after sputter part reassembly, and FAI/check sheet confirmation for DL2.
+-On-line notes highlighted several follow-up items, including Plasma 3 setup verification, Auto shuttle recovery, a bent dust collector hose in laser cutting, loose screw after sputter part reassembly, and FAI/check sheet confirmation for DL2.
 -A key learning point for Trench Dry Ice is that Cold Jet pressure is not allowed to be adjusted freely, and troubleshooting must follow machine spec, alarm list logic, vacuum/dust collector condition, and magazine/SFIS interface control.
 -The reverse-loading/unloading unit of the plasma2 machine(Automation line) has been disassembled and is awaiting repair by the supplier to ensure it conforms to the correct production line layout."
 
@@ -376,7 +352,7 @@ The key learning is that molding stability must be judged by actual press behavi
 Press 3 of molding machine 146 repeatedly failed to push the panel out to the cooling tray this afternoon, and the issue temporarily recovered after manual removal and brushing/cleaning.
 Current suspicion is mold release/output contamination or a local release path issue on Press 3, since the problem repeats frequently and is not seen as a full machine breakdown."
 
-"Today’s molding training focused on alarm-based troubleshooting, model-change verification, and production monitoring under MP condition, with emphasis on mold-side logic rather than only machine alarm text.
+Molding training focused on alarm-based troubleshooting, model-change verification, and production monitoring under MP condition, with emphasis on mold-side logic rather than only machine alarm text.
 Key learning confirmed that transfer pressure/time deviation should first suspect mold incomplete/foreign material, vacuum abnormality should first suspect mold side, and model change release must verify mold chase, PR set, and recipe.
 During production, machine 146 press 3 had a cavity vacuum abnormality and was isolated after O-ring replacement for night-shift re-FAI, while machine 158 press 3 showed a clamp-force abnormality and required parameter adjustment by ME and EQ."
 
@@ -427,22 +403,22 @@ Action:
 - Fine tune transfer position from loader to WC
 - Plan for belt replacement"
 
-"🔴 1. Surface condition is multi-stage controlled (NOT only WC)
+1. Surface condition is multi-stage controlled (NOT only WC)
 CPF bonding is affected by multiple preparation steps:
 → Water Clean → Plasma (before molding) → Plasma (before CPF)
 Any instability in these stages
 → impacts final glue adhesion on molding surface
-🟠 2. Process stability > spec compliance
+ 2. Process stability > spec compliance
 FAI OK ≠ Stable production  
 CPF nozzle(New buy) near spec (0.022–0.023)
 + WC process drift (temp / flow)
 → increases risk of sudden NG (bonding / void / weak adhesion)
-🔵 3. Hidden risk: system NG without alarm
+3. Hidden risk: system NG without alarm
 Surface-related issues often have NO alarm
 Machine reads OK (WC / Plasma / CPF)
 → but real surface condition unstable
 → defect only appears downstream
-🎯 Key Message
+Key Message
 Control focus must be on surface stability across WC + Plasma + CPF,
 not only machine performance at individual station"
 "Date: 2026-06-03
