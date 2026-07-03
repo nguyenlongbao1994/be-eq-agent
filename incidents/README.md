@@ -35,6 +35,7 @@ This folder stores all validated incidents captured from BE EQ line follow-up, t
 | INC-2026-06-29-MOLD147-P2 | 2026-06-29 | Molding | Mold 147 / Press 2 | Abnormal during cleaning while preparing for Automation Hades FRB | Mechanical / Mold / Cleaning | Open investigation | [View](./2026/2026-06-29-mold147-press2-cleaning-abnormal.md) |
 | INC-2021-11-04-MOLDING-EQMLD00147-TABLE-ROTATION-DAMAGE | 2021-11-04 | Molding | EQMLD00147 / Table rotation | Table rotation move error caused 1 panel damage after lift position / panel detection abnormality | Mechanical / Sensor / Transfer / Control | Monitoring | [View detail](./2021/2021-11-04-molding-eqmld00147-table-rotation-panel-damage.md) |
 | INC-2021-07-10-MOLDING-FQMLD00143-PRESS3-VOID | 2021-07-10 | Molding | FQMLD00143 / Press 3 | Press 3 could not produce due to molding void at SIP (1-4-19), linked to press imbalance and vacuum release issue | Mechanical / Process / Vacuum / Mold balance | Monitoring | [View detail](./2021/2021-07-10-molding-fqmld00143-press3-void.md) |
+| INC-2022-07-05-MOLDING-EQMLD00154-TABLE-ROTATION-DAMAGE | 2022-07-05 | Molding | EQMLD00154 / Table rotation | Table rotation move error caused 1 panel damage because sensor 1S12 detected panel incorrectly while the panel was still hanging out of the leadframe handle | Mechanical / Sensor / Transfer / Control | Recovered / Monitoring | [View detail](./2022/2022-07-05-molding-eqmld00154-table-rotation-panel-damage.md) |
 ---
 
 ## Notes
