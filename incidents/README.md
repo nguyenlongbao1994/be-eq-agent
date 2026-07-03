@@ -33,7 +33,7 @@ This folder stores all validated incidents captured from BE EQ line follow-up, t
 | INC-2026-06-26-LASERCB-HIGHCT | 2026-06-26 | Laser CB | One unit | High CT contribution by one machine | Process / Vision / Throughput | Open | [View](./2026/2026-06-26-lasercb-high-ct.md) |
 | INC-2026-06-26-PLASMA3-SFIS | 2026-06-26 | Plasma 3 | SFIS integration | SFIS software not fully fixed / not ready | IT / Integration / Traceability | Open | [View](./2026/2026-06-26-plasma3-sfis-not-ready.md) |
 | INC-2026-06-29-MOLD147-P2 | 2026-06-29 | Molding | Mold 147 / Press 2 | Abnormal during cleaning while preparing for Automation Hades FRB | Mechanical / Mold / Cleaning | Open investigation | [View](./2026/2026-06-29-mold147-press2-cleaning-abnormal.md) |
-
+| INC-2021-11-04-MOLDING-EQMLD00147-TABLE-ROTATION-DAMAGE | 2021-11-04 | Molding | EQMLD00147 / Table rotation | Table rotation move error caused 1 panel damage after lift position / panel detection abnormality | Mechanical / Sensor / Transfer / Control | Monitoring | ./2021/2021-11-04-molding-eqmld00147-table-rotation-panel-damage.md |
 ---
 
 ## Notes
