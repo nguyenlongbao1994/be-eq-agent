@@ -1,0 +1,115 @@
+---
+id: INC-2026-07-01-SPT58-EMERGENCY-STOP-ALARM
+date: 2026-07-01
+time: "04:40-07:30"
+station: Sputter
+machine: EQSPT00058
+model: C10.5
+issue_type:
+  - Human
+  - Safety
+  - Emergency
+  - Operation
+status: Recovered after EMO reset / CCTV verification required
+owner: EQ / PD / FA
+tags:
+  - sputter
+  - spt58
+  - emergency-stop
+  - emo
+---
+
+# SPT#58 – Emergency Alarm Shut Down Machine
+
+## Issue
+- Machine: EQSPT00058  
+- Model: C10.5  
+- Problem: Emergency alarm → machine shutdown  
+- Time: 01-Jul-2026 04:40 AM  
+- Impact: 2 sputter trays (336 pcs)  
+
+---
+
+## Timeline
+- 30-Jun 20:20 → Perform FAI → OK  
+- 01-Jul 04:40 → Machine shut down  
+- 01-Jul 05:00 → EQ check power supply & machine condition  
+- 01-Jul 06:10 → Found EMO button pressed at unloader  
+- 01-Jul 07:30 → Machine recovery → run normal  
+
+---
+
+## Symptom
+- Machine shut down suddenly  
+- No prior machine alarm related to equipment failure  
+- Electrical system partially still active  
+
+---
+
+## Root Cause
+1. Power supply at front cabinet disconnected  
+2. Rear power (380V / 220V) still normal  
+3. EMO button at unloader was pressed  
+4. Root cause confirmed:  
+   -> Operator pressed Emergency Stop  
+
+---
+
+## Failure Mechanism
+- EMO button triggers safety circuit  
+- Immediate shutdown of machine control  
+- Stops operation regardless of machine status  
+- Safety design overrides all process conditions  
+
+---
+
+## Actions
+1. Check electrical power supply → OK  
+2. Inspect emergency buttons  
+3. Identify EMO pressed at unloader  
+4. Reset EMO  
+5. Restart machine  
+6. PD test tray → OK  
+
+---
+
+## Corrective Action
+1. Recover machine and verify operation  
+2. Remove 2 trays for inspection / rework  
+
+---
+
+## Preventive Action
+1. Check CCTV to identify who pressed EMO  
+2. Train operator on EMO usage  
+3. Consider adding cover or protection for EMO  
+
+---
+
+## Current Status
+- Machine recovered  
+- Test tray OK  
+- Production resumed  
+
+---
+
+## Impact
+- Quality: 2 trays affected  
+- Production: ~3 hours downtime  
+- Safety: EMO function normal  
+- Repeat risk: HIGH if operator misuse continues  
+
+---
+
+## Open Risk / Follow-up
+- CCTV investigation required  
+- Operator discipline control  
+- EMO accessibility review  
+
+---
+
+## Evidence
+- Timeline confirms no equipment fault  
+- EMO button found pressed  
+- Power system normal  
+- Machine recovered after reset  
