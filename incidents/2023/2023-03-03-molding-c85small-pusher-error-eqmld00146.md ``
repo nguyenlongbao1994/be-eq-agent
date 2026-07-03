@@ -1,0 +1,77 @@
+---
+id: INC-2023-03-03-MOLDING-C85SMALL-PUSHER-ERROR-EQMLD00146
+date: 2023-03-03
+time: "22:00"
+station: Molding
+machine: EQMLD00146
+model: C8.5 Small
+area: Leadframe handler / Pusher
+issue_type:
+  - Sensor
+  - Control
+  - Transfer
+  - Mechanical
+status: Recovered / Monitoring
+owner: EQ
+tags:
+  - molding
+  - c8.5-small
+  - pusher-error
+  - sensor-3s7b
+  - leadframe-handler
+  - sender-receiver
+  - alignment
+---
+
+# Molding C8.5 Small – Pusher Error
+
+## Issue
+- Machine: Molding EQMLD00146
+- Model: C8.5 Small
+- Time: 22:00 (03/03/2023)
+- Machine alarm: Error while pushing leadframes to the leadframe handler
+
+## Symptom
+- Machine showed a pusher-related alarm while pushing leadframes to the leadframe handler.
+
+## Root Cause
+- Root cause: Signal of sensor control pusher (3S7B) was not stable.
+- Sensor 3S7B must always be ON before push-out panel.
+- However, the sender and receiver positions of sensor 3S7B were not aligned.
+- Because sender and receiver were not aligned, the signal became unstable.
+
+## Failure Mechanism
+- Sensor 3S7B is used as a control condition before panel / leadframe push-out.
+- Due to sender / receiver misalignment, the sensor signal fluctuated and did not remain stable in the required ON state.
+- Because the pusher control condition depended on this signal, unstable detection triggered the pusher error during leadframe transfer to the leadframe handler.
+
+## Actions
+- Re-aligned the sender and receiver positions of sensor 3S7B.
+- Adjusted the sensitivity of sensor 3S7B.
+- Tightened the fixing screws of the sensor position.
+- Added marking on the machine for sensor position reference.
+- Added sensor 3S7B check item into monthly maintenance.
+
+## Current Status
+- Machine recovered to normal condition from 10:00 AM (03/04/2023).
+- Current status: recovered, continue monitoring for repeat signal instability.
+
+## Impact
+- Quality: no specific panel defect quantity stated in the slide
+- Production: machine interruption until sensor realignment and adjustment were completed
+- Safety: not stated in the report
+- Repeat risk: possible if sensor position shifts again or monthly maintenance check is not sustained
+
+## Open Risk / Follow-up
+- Need to confirm long-term stability of sensor 3S7B signal
+- Need to verify the monthly maintenance item is executed consistently
+- Need to monitor whether sender/receiver position moves again during operation / vibration
+
+## Evidence
+- Attached analysis slide showing:
+  - machine alarm screenshot
+  - sender position
+  - receiver (mirror) position
+  - signal OK verification
+  - maintenance checklist reference
+``
