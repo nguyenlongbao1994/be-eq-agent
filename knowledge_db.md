@@ -1,7 +1,14 @@
 # BE EQ Knowledge Database
 
 ## Purpose
-This file stores structured BE EQ knowledge for troubleshooting, reporting, training, automation integration, and shared-line risk analysis.
+This file stores structured BE EQ knowledge, issue history, station logic, automation integration notes, and shared-line risk context for troubleshooting, training, reporting, and project readiness support.
+
+## Data Rule
+- Only confirmed information from the current chat history is included.
+- Dates are assigned only when the date was explicitly stated or later explicitly corrected/confirmed.
+- If the timing is not exact, information is stored under **Undated Training Knowledge** or **Cross-day Knowledge**.
+- If no validated data exists for a topic, the correct answer is:
+  **Data not available in current knowledge.**
 
 ---
 
@@ -11,7 +18,7 @@ This file stores structured BE EQ knowledge for troubleshooting, reporting, trai
 Water Clean → Baking → Plasma → Molding → Laser → Dry Ice → Plasma → CPF → Curing → Jigsaw → Tape → Sputter → AVI
 
 ## 1.2 Core Engineering Principle
-Most failures are **not** machine breakdown.
+Most failures are **not machine breakdown**.
 
 Main failure sources:
 - Process instability
@@ -32,7 +39,7 @@ Small issue → misalignment → drop → stacking → collision → defect
 4. Control / actuator
 5. Process condition / margin
 6. Human operation
-7. Automation / IT / routing / SFIS (if auto line)
+7. Automation / IT / routing / SFIS (if automation line)
 
 ---
 
@@ -41,35 +48,35 @@ Small issue → misalignment → drop → stacking → collision → defect
 ## 2.1 Water Clean
 ### Understanding
 - Core Water Clean process is relatively stable.
-- Water Clean is not the default high-risk process station.
+- Water Clean is not the default high-risk station.
 
 ### Main watch points
 - Loader / unloader aging
-- Transfer interface
+- Transfer interface stability
 - Scanner robustness
 - Carrier code compatibility
 
 ### Rule
-Do not assign downstream issues to Water Clean without:
-- clear surface evidence, or
-- handshake / transfer evidence
+Do not assign downstream issues to Water Clean unless:
+- there is direct surface evidence, or
+- transfer / handshake clearly points back to Water Clean
 
-### Control
+### Chemical / filter control
 - N600: replace every 2 weeks
-- Filter: replace / check every 1–2 weeks
+- Filter: replace/check every 1–2 weeks
 
 ---
 
 ## 2.2 CPF
 ### Understanding
-Main CPF risk is glue instability, not direct collision.
+Main CPF failure mode is **glue-related instability**, not direct collision.
 
 ### Main watch points
 - Glue overflow
 - Dot weight instability
 - Valve / chamber wear
 - Process margin sensitivity
-- Nozzle validation / trial
+- Nozzle trial / validation
 
 ### Rule
 FAI pass does not mean process margin is stable enough.
@@ -86,7 +93,7 @@ Molding is a multi-module system:
 - pellet / compound supply
 
 ### Main troubleshooting logic
-- If transfer pressure / time deviates:
+- If transfer pressure / transfer time deviates:
   - suspect mold incomplete
   - suspect foreign material in mold
   - suspect abnormal force inside mold
@@ -97,7 +104,7 @@ Molding is a multi-module system:
 - If machine runs but output is NG:
   - check mold surface first
 
-### Restart rule
+### Restart / FAI rule
 - If no input > 12 hours:
   - redo FAI before restart
 
@@ -107,8 +114,8 @@ Must verify:
 - PR set
 - recipe
 
-### Process readiness
-Missing proper cleaning / smoothing / conditioning before FAI may create hidden mold surface issues.
+### Process readiness concern
+Missing proper mold cleaning / smoothing / conditioning before FAI can create hidden mold surface issues.
 
 ---
 
@@ -118,9 +125,9 @@ Two main machine types:
 - Hans
 - E&R
 
-They are different manufacturers but use the same laser source type.
+These use the same laser source type but are different machine families.
 
-### Main machine sections
+### Main machine structure
 - load / unload
 - dust extraction
 - cooling
@@ -132,17 +139,17 @@ They are different manufacturers but use the same laser source type.
 2. Working table
 
 ### Hardest technical adjustment
-- Optical path alignment
+- Optical path adjustment
 
-### Calibration / lifecycle
+### Source / lifecycle rule
 - Recalibration every 6 months
-- Recalibration also required when running a new model
-- >35,000 hours: inspect / prepare source replacement
-- >40,000 hours: mandatory source replacement
+- Recalibration required when running a new model
+- >35,000 hours: inspect / prepare replacement
+- >40,000 hours: mandatory replacement
 
 ### Laser software
-- One software for laser source control
-- One software for machine control
+- Laser source control software
+- Machine control software
 - Spectra source software frequency learned in training: 102000 Hz
 
 ### Traceability
@@ -164,10 +171,10 @@ It is a full system including:
 - nozzle / robot
 - vacuum / pedestal
 - magazine transfer
-- scanner / software / SFIS / logs / alarms
+- scanner / software / SFIS / alarm pages / running log
 
 ### Rule
-Cold Jet output / pressure must not be adjusted freely outside defined spec.
+Cold Jet output / pressure must not be adjusted freely outside spec.
 
 ### Main troubleshooting groups
 - Cold Jet / output / dry ice feed
@@ -183,13 +190,13 @@ Cold Jet output / pressure must not be adjusted freely outside defined spec.
 ### PM / lifetime control
 - Machine 58: blade change around 700 panels
 - Other machines: blade change around 500 panels
-- Blade thickness noted in line learning: 0.63 mm
-- Table calibration every 3 months
-- Cleaning brush replacement every 108000 runs
+- Blade thickness recorded in chat: 0.63 mm
+- Table calibration: every 3 months
+- Cleaning brush replacement: every 108000 runs
 
 ### Brush
 - Material: plastic
-- Function: remove saw debris during cleaning
+- Function: remove saw debris
 
 ### Cleaning water
 - 100% fresh RO water
@@ -201,7 +208,7 @@ If blade / chuck / table condition is not controlled:
 - crack risk
 - burr risk
 - hidden defect risk
-- machine may appear normal while process quality is already unstable
+- machine may appear normal while quality is already unstable
 
 ---
 
@@ -225,8 +232,8 @@ If blade / chuck / table condition is not controlled:
 - Air:
   - 0.5–0.8 MPa
   - 200 L/min
-- Speed: 35800 cph
-- Accuracy: ±40 µm
+- Placement speed: 35800 cph
+- Placement accuracy: ±40 µm
 
 ## 3.2 Intelume CCM-A201
 - Fully automatic dry ice cleaning system
@@ -246,213 +253,461 @@ If blade / chuck / table condition is not controlled:
 
 ---
 
-# 4. ISSUE DATABASE
+# 4. ISSUE HISTORY BY DATE
 
-## 4.1 Cold Jet #22 Output Instability
-### Symptom
-- Dry ice output / weight drops below spec
-- Intermittent behavior
-- No hardware or software change noted
-
-### Failure mechanism
-- Flow instability due to pressure / temperature / feed dynamics
-- Partial freezing may restrict actual flow without full clogging
-
-### Top suspects
-1. Dry ice quality variation
-2. Partial nozzle freezing
-3. CDA fluctuation
-
-### Quick checks
-- Change dry ice block
-- Purge system before run
-- Check real-time air pressure, not setpoint only
-- Run ≥3 repeat cycles
-
-### Impact
-- Cleaning instability
-- Hidden contamination risk
-- Yield impact
-- Hard-to-catch intermittent pattern
-
-### Action
-- Purge before run
-- Clean nozzle / pipe
-- Log weight trend per shift
+> Only dates that were explicitly given or later clearly confirmed are assigned here.
 
 ---
 
-## 4.2 Mold 147 Press 2 Abnormal During Cleaning
-### Symptom
-- Press 2 abnormal during cleaning while preparing for Automation Hades FRB
+## 2026-06-01
 
-### Condition
-- Isolated and stopped from use
-- Root cause still under investigation
+### Issue: Panel dropped inside machine during LBO run
+**Machine:** #232
 
-### Main risk
-- Mold-side abnormality
-- Potential hidden mechanical issue
+#### Symptom
+- One panel dropped inside machine during production
+
+#### Mechanism
+- SMD lift malfunctioned
+- Laser did not receive corresponding error signal
+- Transfer continued
+- Panel fell to machine bottom
+
+#### Issue type
+- Sensor / Control / Transfer / Interlock
+
+#### Impact
+- Panel drop
+- Product damage risk
+- Missing stop / handshake logic
+- Repeat risk if interface not corrected
+
+#### Action / learning direction
+- Need lift-to-laser error signal verification
+- Need transfer block if upstream lift is abnormal
+- Treat as communication / interlock gap, not simple mechanical failure only
 
 ---
 
-## 4.3 Mold 146 Pin Drop
-### Symptom
+## 2026-06-11
+
+### Issue: Laser / lift communication drop case
+#### Symptom
+- Lift abnormality did not stop downstream action
+- Panel dropped between machine modules
+
+#### Issue type
+- Control / Interface / Sensor / Transfer
+
+#### Main logic
+- Communication / handshake gap exists between lift abnormality and laser process continuation
+
+---
+
+## 2026-06-13
+
+### General line notes
+- Checked conveyor maintenance items
+- Checked CPF glue replacement
+- Machine 158 Press 2 force around 54 ton
+- Laser PLC logic for loader / unloader signal was modified and re-tested
+
+### Issue type examples that day
+- Preventive maintenance
+- Control logic modification
+- Parameter observation
+
+---
+
+## 2026-06-15
+
+### Laser Hans training note
+#### Main learning
+- Loader / unloader PLC logic
+- Retest after modification
+
+#### Technical knowledge captured that day
+- Hans + E&R machine families
+- Optical path is hardest adjustment
+- Calibration and source replacement logic
+- Software structure and SFIS traceability
+- Water cooling requirement
+
+---
+
+## 2026-06-18
+
+### Molding / mold chase / FR4 readiness
+#### Note
+- Mold chase / mold change before FR4 run was still under checking / follow-up
+
+### Oven issue
+#### Symptom
+- Over-temperature protection issue
+- If setup too low, oven cannot reach required temperature
+
+#### Issue type
+- Control / Utility / Process
+
+### Water Clean issue
+#### Symptom
+- Carrier QR codes not consistent
+- Scanner replacement not yet available
+- Temporary handling by carrier classification
+
+#### Issue type
+- Detection / Scanner / Process control
+
+### Laser 222
+#### Symptom
+- Cold Jet out of spec
+- Adjusted and FAI OK
+
+#### Issue type
+- Process / Dry Ice / parameter recovery
+
+### Jigsaw
+#### Symptom
+- Product code cannot be read
+- Surface / DIC cleanliness suspected from note
+
+#### Issue type
+- Detection / Surface / Process interaction
+
+### Automation Hades update
+- Inline Plasma machines arrived at USI
+- Installation / layout in progress
+- One before Molding
+- One before CPF
+
+---
+
+## 2026-06-22
+
+### Training focus
+- Cutting / Trench Dry Ice startup flow
+- Parameter pages
+- Alarm detail
+- Running log
+- Manual maintenance pages
+- Scanner / software / InteChip usage logic
+
+### Plasma 3
+- Setup completed
+
+### Auto shuttle
+- Fault recovered, note indicates OK
+
+### Laser cutting
+#### Symptom
+- Dust collector hose was bent
+
+#### Issue type
+- Utility / Exhaust / dust collection
+
+### Sputter
+#### Symptom
+- Reassembled part but screw was loose
+
+#### Issue type
+- Mechanical fastening
+
+### DL2
+- FAI + first-shift check sheet mentioned
+
+### Strong learning of the day
+- Cold Jet pressure must not be adjusted freely
+- Troubleshooting must follow spec, vacuum, pedestal, dust collector and alarm logic
+
+---
+
+## 2026-06-23
+
+### Plasma 2
+- Setup completed
+
+### WC79
+#### Symptom
+- Scanner connection abnormality
+
+#### Issue type
+- Scanner / Connection / Detection
+
+### Laser 153
+- 6-month PM completed
+- No special issue found
+
+### Dry Ice 22
+- Mask replaced
+- Check OK
+- Check sheet completed
+
+### Automation line
+- Laser stress test performed
+
+### Saw 58
+#### Symptom
+- Handling / output-side issue noted
+- Exact mechanism not finalized in chat
+
+### DCN / controlled document learning
+- Any new checklist / form / verification item must be updated through controlled DCN release
+- Must have:
+  - document number
+  - revision version
+  - controlled release
+- FAI / checklist items must only be checked after actual verification is completed
+
+### Sputter
+- Full set of internal screws replaced
+
+---
+
+## 2026-06-24
+
+### Mold 146
+#### Symptom
 - Pin dropped from mold
 - Risk of falling onto mold chase surface
 
-### Impact
-- Mold chase surface damage risk
+#### Impact
+- Mold chase damage risk
 
-### Action
-- Pin was re-fixed using glue
+#### Action
+- Re-fixed using glue
 - Daily monitoring in place
 
----
+### CPF
+#### Symptom
+- Z-axis abnormality
 
-## 4.4 Laser CB Cannot Detect PCB Mark
-### Symptom
-- Hades auto line Laser CB cannot detect PCB mark
+#### Issue type
+- Axis / mechanical / control
 
-### Possible impact
-- CT increase
-- Detection instability
-- Automation readiness risk
+### Laser 230
+- Quarterly PM performed
+- Actual CT around 11–15 seconds
 
----
+### Hades auto line / Laser CB
+#### Symptom
+- Cannot detect PCB mark
 
-## 4.5 Laser CT Instability
-### Symptom
-- One laser unit causes higher CT
-- Vision NG / cannot detect was associated in note
+#### Issue type
+- Vision / mark detection / automation control
 
-### Impact
-- Throughput loss
-- Automation unbalance
-- Possible repeat issue if mark / optics / alignment not controlled
+### TDIC #43
+#### Symptom
+- Vacuum / dust filter issue
 
----
+#### Issue type
+- Utility / cleaning / airflow
 
-## 4.6 Plasma 3 SFIS Not Fully Online
-### Status
-- Machine side can send data to SFIS
-- Software behavior normal
-- IT routing not completed
-- Station cannot be fully online
-
-### Interface path
-- Machine ↔ Baymax via TCP/IP
-- Product data string sent to system
-
-### Impact
-- Traceability incomplete
-- Automation line integration incomplete
+### Plasma 3
+- QR scanner optimization ongoing
 
 ---
 
-## 4.7 WC Scanner / Carrier Code Compatibility
-### Symptom
-- Carrier QR code not consistent
-- Scanner replacement not yet available
-- Temporary containment done by carrier classification
+## 2026-06-25
 
-### Impact
-- Scanner detect instability
-- Loading / identification variability
+### Plasma 2 – automation line
+#### Symptom
+- Base orientation reversed
+- Requires modification
 
----
+#### Target
+- Must finish modification and run by 2026-07-01
 
-## 4.8 CPF Z-axis Abnormality
-### Symptom
-- Z-axis issue noted in CPF
+#### Issue type
+- Mechanical integration / installation
 
-### Status
-- Requires follow-up / root cause narrowing
-
----
-
-## 4.9 TDIC #43 Vacuum / Dust Filter Issue
-### Symptom
-- Vacuum / dust filter abnormality at TDIC #43
-
-### Issue type
-- Utility / cleaning / airflow / vacuum
-
----
-
-## 4.10 Laser Cooling Water Connector Broken by PD
-### Symptom
-- Cooling water connector broken during operation / handling
-
-### Action
-- Replaced with new connector
-- Machine recovered OK
-
-### Issue type
-- Human / mechanical / utility
-
----
-
-## 4.11 WC37 Pressure Drop
-### Symptom
+### WC37
+#### Symptom
 - Pressure drop observed
 - Nozzle confirmed not clogged
 
-### Issue type
+#### Issue type
 - Utility / flow / pressure
 
-### Status
-- Root cause needs further isolation
+### Laser
+#### Symptom
+- PD broke cooling water connector
+- Connector replaced and machine recovered OK
+
+#### Issue type
+- Human / mechanical / utility
+
+### Cold Jet tuning
+- FAI = 167 kg
+- Actual peak = 172
+
+### SFIS / Baymax / TCP-IP
+#### Function under integration
+- Plasma automation line must send product data string through Baymax via TCP/IP to system
+
+#### Issue type
+- IT / integration / traceability
 
 ---
 
-## 4.12 Laser Cutting Dust Collector Hose Bent
-### Symptom
-- Dust collector hose bent in laser cutting area
+## 2026-06-26
 
-### Impact
-- Dust extraction efficiency risk
-- Cleaning / contamination / fume removal concern
+### WC
+- Checked 1M / 3M / 6M PM items
+
+### TDIC
+- Cold Jet changed from #22 to #26
+- Checked dry ice pipe
+- Cleaned nozzle
+
+### Key symptom for #22
+#### Symptom
+- #22 often drops dry ice output / weight below spec
+- No hardware or software change was made
+
+#### Issue type
+- Process / Utility / Intermittent
+
+#### Main suspect logic captured in chat
+- likely flow instability, not fixed hardware breakdown
+- main suspects:
+  - dry ice quality variation
+  - partial freezing
+  - air fluctuation
+
+### Jig Saw
+- PM with belt check
+
+### CDIC
+- Checked tool / part / mask / pedestal
+
+### Dry run
+- 10:00 started Molding 157 + robot dry run
+- Initially only 10% because Plasma 2 setup not complete
+- 10:30 marked done
+
+### Laser CB
+#### Symptom
+- One machine still contributes to higher CT
+
+### Plasma 3
+#### Symptom
+- SFIS software still not fully fixed
+
+### 14:34
+- Shifted work focus to CPF auto line
 
 ---
 
-## 4.13 Sputter Screw Loose After Reassembly
-### Symptom
-- Part reassembled but screw loose
+## 2026-06-29
 
-### Action
-- Later internal screws were fully replaced
+### Mold 147 / Press 2
+#### Symptom
+- Abnormal during cleaning while preparing for Automation Hades FRB
+- Press isolated and stopped from use
+- Root cause investigation ongoing
+
+#### Issue type
+- Mold / cleaning abnormality / mechanical
+
+### Jigsaw line stability
+- FAI at 10:30 showed no issue
+- Machine 58 and 72 running small model
+- 4 sets available, currently 3 sets for C10
+- Blade management confirmed:
+  - machine 58 ~700 panel per blade change
+  - others ~500 panel per blade change
+- Blade thickness: 0.63 mm
+- Table calibration: every 3 months
+- Brush replacement: every 108000 runs
+- RO fresh cleaning water, no recycle
+
+### Process flow confirmation
+- LTE must go CDIC
+- GPS can go direct to Sputter
+- Over Q-time before Sputter → curing required
+
+### Line status
+- By 14:00 all WIP below Saw had been cleared
+- Automation line bypass run showed no issue
+- At that time Plasma and Sputter load/unload were not running
 
 ---
 
-## 4.14 Product Code Read NG at Jigsaw
-### Symptom
-- Product code read failed
+# 5. UNDATED TRAINING KNOWLEDGE (EARLY JUNE TO LATE JUNE)
 
-### Suspected connection in note
-- Related to surface cleanliness / DIC cleaning condition
+## 5.1 Molding training target bundle
+### Topics learned
+- Alarm troubleshooting
+- Advanced troubleshooting
+- Model change
+- Production monitoring + practice
+
+### Core molding learning
+- Transfer pressure/time abnormal → mold incomplete / foreign material / abnormal pressing force
+- Vacuum abnormal → mold side first
+- Model change → verify mold chase / PR set / recipe
+- No input >12h → redo FAI
 
 ---
 
-# 5. AUTOMATION / DRY RUN KNOWLEDGE
+## 5.2 Laser buyoff / FAI training
+### Key buyoff logic learned
+Laser release is not only recipe check.
+Must consider:
+- X-Y table precision
+- Scanner precision
+- Scanner + CCD positioning accuracy
+- Repeatability
+- Spot circularity / beam profile
+- Z parameter window
+- Laser power decay
 
-## 5.1 Dry run slots learned
-- 09:00–11:00 → Molding to AVI / trench side
-- 13:00–14:00 → Plasma to CPF unload
-- 15:00–16:30 → Carrier / laser flow
-- Additional line slots may cover sputter side depending on run plan
+### Laser release checks repeatedly used
+- recipe
+- parameter
+- FAI dimension
+- trench shift
+- trench inspection
 
-## 5.2 Dry run record rule
-For each run:
-- actual start time
-- actual end time
-- normal running time
-- issue time
-- total input quantity
+---
 
-## 5.3 Support role logic
-- PD collects PCB and records time / issue
-- EQ / Automation / SMD guide operation, manual fallback, troubleshooting
+## 5.3 LT Dry Ice / DIC startup knowledge
+### Startup conditions learned from manual reading / training
+Before running:
+- compressed air main pressure around 0.6 MPa
+- N2 around 0.4 MPa
+- correct recipe / program
+- initialize
+- start
+- first article / first piece before auto run
+
+### Parameter logic learned
+- hot air set temperature
+- drying time
+- dry ice threshold
+- vacuum / negative pressure threshold
+- CDA flow limit
+- idle-time anti-freezing logic
+- chamber temperature / humidity
+- robot speed
+
+### Important mechanism
+- Delay logic and anti-freezing settings are important to prevent dry ice line freezing / clogging
+
+---
+
+## 5.4 Document control / DCN knowledge
+### Meaning
+Any added checksheet, form change, or verification item should be:
+- updated in DCN-managed system
+- version-controlled
+- document-number controlled
+- printed from system for use
+
+### Execution rule
+During FAI / checksheet:
+- verify first
+- only then check / tick the item
 
 ---
 
@@ -462,12 +717,12 @@ For each run:
 - Cold Jet #22 instability
 - Laser CT instability due to vision NG
 - Plasma 3 SFIS not fully online
-- Jigsaw blade / brush lifetime control
-- Mold 147 Press 2 cleaning abnormality under monitoring
+- Jigsaw blade / brush lifecycle control
+- Mold 147 / Press 2 abnormality under monitoring
 - Dry run control and manual fallback readiness
 
-## 6.2 Watch Interpretation Rule
-Most issues should first be interpreted as:
+## 6.2 Interpretation Rule
+Most Watch issues must first be interpreted as:
 - process instability
 - detection gap
 - mechanical wear
@@ -483,16 +738,15 @@ Do not default to machine breakdown.
 ## 7.1 Shared-line condition
 - Hana shares resources / line context with Watch
 
-## 7.2 Readiness principle
-Classify readiness into:
+## 7.2 Readiness classification
 1. Machine available
 2. Need transfer
-3. Need new buy
+3. Need new buy / long lead time
 4. Can share with Watch but capacity must be controlled
 
-## 7.3 Known example from chat
+## 7.3 Known readiness items from chat
 - Vacuum Baking requires transfer
-- Several lab tools have ~8 weeks lead time:
+- Some EE lab tools have ~8 weeks lead time:
   - J-Link Pro
   - I2C/SPI shifter board
   - Battery simulator
@@ -505,23 +759,90 @@ Classify readiness into:
 
 ---
 
-# 8. DOCUMENT CONTROL / DCN
+# 8. AUTOMATION / DRY RUN KNOWLEDGE
 
-## Rule learned
-When any checklist / verification item / form changes:
-- update through DCN-controlled document system
-- must have:
-  - document number
-  - revision version
-  - controlled release
-- operator / engineer should print from system
-- each FAI / checklist item should only be checked after actual completion / verification
+## 8.1 Dry run slots learned
+- 09:00–11:00 → Molding to trench / AVI side
+- 13:00–14:00 → Plasma to CPF unload
+- 15:00–16:30 → Carrier / laser flow
+- Additional slots may later include sputter side depending on plan
+
+## 8.2 Dry run record rule
+For each run:
+- actual start time
+- actual end time
+- normal running time
+- issue time
+- total input quantity
+
+## 8.3 Support logic
+- PD collects PCB and records time / issues
+- EQ / Automation / SMD guide operation, issue handling and manual fallback
 
 ---
 
-# 9. RECOMMENDED TROUBLESHOOTING OUTPUT FORMAT
+# 9. ISSUE PATTERN LIBRARY
 
-## Standard troubleshooting output
+## 9.1 Cold Jet / dry ice output drop pattern
+### Symptom
+- kg or effective output below spec
+- no obvious HW/SW change
+- intermittent
+
+### Main suspects
+1. dry ice quality variation
+2. partial freezing in pipe/nozzle
+3. real-time air fluctuation
+
+### Quick check
+- change dry ice block
+- purge before run
+- compare real-time pressure, not setup only
+- run repeated cycles
+
+### Prevention
+- add repeatability check before release
+- log kg trend by shift / machine
+
+---
+
+## 9.2 Mold abnormal during cleaning
+### Symptom
+- abnormality happens during cleaning / preparation
+- not necessarily during MP run itself
+
+### Main suspects
+1. contamination / residue
+2. loose element / pin problem
+3. mold-side mechanical interaction
+
+### Action
+- isolate first
+- inspect mold-side surface / loose hardware
+- monitor after temporary fix
+
+---
+
+## 9.3 Vision-driven CT increase
+### Symptom
+- one unit causes higher CT
+- linked with vision NG / cannot-detect
+
+### Main suspects
+1. mark detect instability
+2. camera / alignment / optics issue
+3. product cleanliness / contrast issue
+
+### Action
+- compare CT by machine
+- correlate with vision NG log
+- verify mark condition / camera condition
+
+---
+
+# 10. DOCUMENT CONTROL / REPORTING FORMAT
+
+## 10.1 Standard troubleshooting output
 - Symptom
 - Failure mechanism
 - Top suspected causes
@@ -531,17 +852,17 @@ When any checklist / verification item / form changes:
 - Corrective action
 - Preventive action
 
-## Report format
+## 10.2 Reporting output
 - Issue
 - Impact
 - Root Cause
 - Action
 - Risk
-- Owner / next step (if available)
+- Next step / owner (if available)
 
 ---
 
-# 10. OPEN ITEMS STILL NOT CLOSED
+# 11. OPEN ITEMS STILL NOT CLOSED
 
 - Mold 147 Press 2 root cause
 - Plasma 3 IT routing completion
@@ -549,21 +870,21 @@ When any checklist / verification item / form changes:
 - WC37 pressure drop root cause
 - CPF Z-axis abnormality
 - TDIC #43 vacuum / dust filter abnormality
-- Hades auto line PCB-mark detection issue
+- Hades auto-line PCB mark detect issue
 
 ---
 
-# 11. ANCHOR USAGE NOTE
+# 12. ANCHOR USAGE NOTE
 
-Suggested section anchors after upload:
+Suggested useful anchors after upload:
 - `#41-cold-jet-22-output-instability`
 - `#42-mold-147-press-2-abnormal-during-cleaning`
+- `#43-mold-146-pin-drop`
 - `#46-plasma-3-sfis-not-fully-online`
 - `#6-watch-context`
 - `#7-hana-project-context`
 
-Use these for:
-- direct report links
-- troubleshooting reference
-- Agent grounding
-``
+These can be used for:
+- direct section links in reports
+- issue traceability
+- agent grounding
