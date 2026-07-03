@@ -37,7 +37,8 @@ This folder stores all validated incidents captured from BE EQ line follow-up, t
 | INC-2021-07-10-MOLDING-FQMLD00143-PRESS3-VOID | 2021-07-10 | Molding | FQMLD00143 / Press 3 | Press 3 could not produce due to molding void at SIP (1-4-19), linked to press imbalance and vacuum release issue | Mechanical / Process / Vacuum / Mold balance | Monitoring | [View detail](./2021/2021-07-10-molding-fqmld00143-press3-void.md) |
 | INC-2022-07-05-MOLDING-EQMLD00154-TABLE-ROTATION-DAMAGE | 2022-07-05 | Molding | EQMLD00154 / Table rotation | Table rotation move error caused 1 panel damage because sensor 1S12 detected panel incorrectly while the panel was still hanging out of the leadframe handle | Mechanical / Sensor / Transfer / Control | Recovered / Monitoring | [View detail](./2022/2022-07-05-molding-eqmld00154-table-rotation-panel-damage.md) |
 | INC-2022-07-29-MOLDING-C85-SMALL-BLEEDING | 2022-07-29 | Molding | EQMLD000154 / C8.5 small | Compound bleeding found at fiducial mark; machine condition, mold balance, transfer profile, and board/cavity vacuum were checked and found normal, then moldchase cleaning/maintenance control was strengthened | Process / Quality / Moldchase / Compound | Monitoring | [View detail](./2022/2022-07-29-molding-c85-small-bleeding.md) |
-``
+| INC-2022-09-06-MOLDING-EQMLD00147-C85BIG-P2-CAVITYVACUUM | 2022-09-06 | Molding | EQMLD00147 / C8.5 BIG / Press 2 | Cavity vacuum before mold was too high (>30 hPa) because the vacuum tube at the heater block degraded from long-term high temperature exposure and caused vacuum leakage | Utility / Process / Vacuum / Material | Monitoring | [View detail](./2022/2022-09-06-molding-eqmld00147-c85big-press2-cavity-vacuum-too-high.md) |
+
 ---
 
 ## Notes
