@@ -1,0 +1,82 @@
+---
+id: INC-2026-02-23-MOLDING157-SMALL-EAP-SYSTEM-CANNOT-TURN-ON-EQMLD00157
+date: 2026-02-23
+time: "22:00"
+station: Molding
+machine: EQMLD00157
+model: Attis
+issue_type:
+  - IT
+  - Network
+  - Communication
+  - SecsGem
+status: Temporary run by software done / IP fix pending
+owner: EQ / SMD / IT
+tags:
+  - molding
+  - attis
+  - eap
+  - secsgem
+  - ip-address
+  - communication
+  - eqmld00157
+---
+
+# Molding #157 Small issue – EAP system can not turn on
+
+## Issue
+- Issue: EAP system can not turn on
+- Model: Attis
+- Machine: EQMLD00157
+- Time: 22:00 23/02/2026
+
+## Symptom
+- EAP system could not be turned on.
+- Machine could not connect with EAP system.
+- HMI abnormal condition showed SecsGem On/Off function hidden.
+
+## Root Cause
+- Normally the button “Turn on/off” for SecsGem function appears automatically on HMI of molding machine.
+- Because the machine stayed turned off for a long time, the IP address of the machine changed.
+- After IP address changed, the On/Off SecsGem function became hidden.
+- Because the SecsGem function was hidden, the molding machine could not connect with EAP system.
+
+## Failure Mechanism
+- EAP communication depends on the SecsGem function being available and correctly mapped on the machine HMI.
+- After long machine-off duration, machine IP address changed from the expected network setting.
+- Because the communication condition no longer matched the expected IP / RMS environment, the SecsGem on/off function was hidden on HMI.
+- Once SecsGem was not available, the machine could not establish connection with EAP system.
+
+## Actions
+1. Temporary run by software Laser 2D
+   - Status: Done
+
+2. SMD team support debug RMS system following the new IP address
+   - Checkpoint: 24/2
+
+3. IT team support to fix IP address of molding machine
+   - Checkpoint: 24/2
+
+## Current Status
+- Temporary production workaround by software Laser 2D was completed.
+- Root cause direction points to communication / IP-address mismatch affecting SecsGem/EAP turn-on condition.
+- SMD and IT support were required for full recovery.
+
+## Impact
+- Quality: not clearly stated in the slide
+- Production: machine could not connect to EAP and required temporary workaround
+- Safety: not stated in the slide
+- Repeat risk: possible if machine IP address changes again after long shut-down and SecsGem configuration is not stabilized
+
+## Open Risk / Follow-up
+- Need SMD to confirm RMS can follow the new IP correctly
+- Need IT to fix machine IP address permanently
+- Need to verify SecsGem On/Off button becomes visible again on HMI
+- Need to confirm normal EAP connection after IP correction
+
+## Evidence
+- Attached slide shows:
+  - issue description and machine / model / time
+  - example of EAP normal vs abnormal
+  - HMI screen where SecsGem On/Off function is hidden
+  - temporary run by software Laser 2D marked OK
