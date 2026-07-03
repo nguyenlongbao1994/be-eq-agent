@@ -1,0 +1,116 @@
+---
+id: INC-2022-10-07-MOLDING-C85BIG-SHIFT-EQMLD00147-P2L-SHOT9
+date: 2022-10-07
+time: "12:05 PM"
+station: Molding
+machine: EQMLD00147
+model: C8.5 Big
+press: 2 LEFT
+shot: 9
+issue_type:
+  - Process
+  - Mechanical
+  - Positioning
+  - Moldchase
+status: Follow-up after setting change
+owner: EQ / ME
+tags:
+  - molding
+  - c8.5-big
+  - shift
+  - offset
+  - press2-left
+  - shot9
+  - pusher
+  - tolerance-window
+  - moldchase
+  - top-mold-pin
+---
+
+# Molding C8.5 Big Shift – EQMLD00147 Press 2 LEFT Shot 9
+
+## Issue
+- Molding shift: layer compound after molding offset at X-axis 0.78 mm
+- Model: C8.5 Big
+- Quantity: 1 panel PCB
+- Machine: EQMLD00147
+- Time of issue panel: 12:05 PM (07/10/2022)
+
+## Timeline
+- 08:30 AM → Big cleaning process
+- 11:20 AM → Run FAI, all panel OK
+- 12:20 PM → Press 2 LEFT / Shot 9: 1 panel molding shift offset found, PD stopped the machine
+- 12:35 PM → EQ & ME checked all conditions to find root cause
+- 13:00 PM → Machine checking finished, result normal, production continued with follow-up
+
+## Symptom
+- One panel showed molding shift offset at X-axis 0.78 mm after molding.
+- The issue was found at Press 2 LEFT / Shot 9.
+
+## Root Cause Analysis
+### Verified checks
+- Rechecked all PCB input:
+  - Before issue: Shot 1 → 8 = normal
+  - After issue: Shot 10 → 15 = normal
+- Checked machine alarm log from 11:30 to 12:30:
+  - machine ran normally
+  - no alarm related to panel shift was recorded
+- Checked CCTV from 11:30 to 12:30:
+  - no operator handling abnormality
+  - machine operation looked normal
+
+### Suspected mechanism
+- The NG panel may already have been abnormal before molding (examples noted in report: warpage, tape in panel, etc.)
+- When the panel was pushed into moldchase, its position became incorrect (offset 0.78 mm)
+- Moldchase closed while panel position was incorrect
+- Pin of top mold was damaged
+- Molding shift then occurred
+
+## Failure Mechanism
+- The machine, log, and CCTV review did not show clear alarm or direct handling abnormality.
+- The incident was treated as a positioning-control issue linked to the panel entering moldchase in an incorrect position.
+- Because the panel position exceeded the desired tolerance window, mold closing proceeded while the panel was offset.
+- That incorrect closing condition likely damaged the top mold pin and created molding shift on the panel.
+
+## Action
+### Preventive action direction
+Prevent issue when panel is pushed into moldchase in incorrect position.
+
+### Setting change
+- Change parameter **"Pusher small tolerance window"** from **7** to **5** in machine setting.
+
+### Vendor / standard reference noted in report
+- Based on vendor guide
+- Best standard setting originally:
+  - 7 ≈ 0.7 mm
+- Changed to:
+  - 5 ≈ 0.5 mm
+
+### Purpose of this setting
+- "Pusher small tolerance window" is used to detect panel position when the panel is pushed into the mold.
+- Actual panel position must be within the tolerance window.
+- If not within tolerance:
+  - the press does not close
+  - machine alarms
+- This is intended to prevent damage to the product or the mold.
+
+## Current Status
+- Machine checking finished and machine condition was considered normal at the time of review.
+- Production continued after checking.
+- Follow-up is required after applying tighter pusher tolerance setting.
+
+## Impact
+- Quality: 1 panel PCB showed molding shift / offset
+- Production: machine was stopped for checking, then resumed
+- Safety: not stated in the report
+- Repeat risk: possible if abnormal panel input condition or tolerance-window control is not sufficiently tightened
+
+## Open Risk / Follow-up
+- Need to monitor whether tighter pusher tolerance setting prevents repeat incorrect panel position
+- Need to watch for recurrence of top mold pin damage
+- Need to confirm if incoming abnormal panel conditions (warpage / tape / etc.) remain present
+
+## Evidence
+- Attached issue photos and timeline in report
+- Before / after machine-setting screenshots for pusher small tolerance window
+`
