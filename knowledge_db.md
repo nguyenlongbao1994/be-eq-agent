@@ -94,12 +94,21 @@ FAI pass does not mean process margin is stable enough.
 ## 2.3 Molding
 
 ### Understanding
-Molding is a multi-module system:
+Molding là hệ thống đa module, failure thường đến từ tương tác giữa các module hơn là 1 machine breakdown đơn lẻ. Các khối chính gồm:
 - handling
 - transfer
 - press
 - vacuum
 - pellet / compound supply
+- vision / PR / recipe
+- MMI / lot tracking / authorization / SECS-GEM
+
+### Core engineering principle
+- Physical reality before signal
+- Vacuum abnormal: nghi mold side / sealing / contamination trước
+- Transfer abnormal: nghi mold incomplete / foreign material / abnormal force in mold trước
+- Machine chạy nhưng output NG: kiểm mold surface / cleaning / conditioning / recipe margin trước
+- Most failures are not direct machine breakdown; cần tách process / sensor / mechanical / control / interface / human
 
 ### Main troubleshooting logic
 - If transfer pressure / transfer time deviates:
@@ -110,21 +119,116 @@ Molding is a multi-module system:
   - suspect mold side first
 - If machine runs but output is NG:
   - check mold surface first
+- If abnormality happens after conversion / cleaning / PM:
+  - check release gap, conditioning, re-qualification, and taught position recovery first
+- If downstream/upstream handoff is unstable:
+  - suspect false clear / timing mismatch / readiness handshake before assuming hardware failure
+
+### Machine architecture watch points
+- Cassette Handler:
+  - deck / lift / pusher / double leadframe detect / loader-offloader flow
+- Leadframe Handler:
+  - X-Z-rotation / pushers / anti-warpage / preheat / taught position drift
+- Press / Mold:
+  - clamp / plunger / transfer / UOD / mold contamination / mold seating
+- Vacuum:
+  - board vacuum / cavity vacuum / chamber vacuum / filter / leak / settle time
+- Pellet / Compound:
+  - pellet age / hopper feed / delay / preheat sequence / no-pellet false state
+- Vision / Recipe:
+  - PR set / light / orientation / mark detect / recipe-family mismatch
+
+### MMI / operation knowledge
+Main machine states:
+- Not Ready
+- Initializing
+- Standby / Idle
+- Ready
+- Executing
+- Pause / Pausing
+- Alarm / Alarming
+
+Main operational modes:
+- Production
+- Disabled
+- Inactive
+- Conditioning
+- Conversion
+- Short shots
+- Transfer cleaning
+- Compression cleaning
+- Dry cycle
+
+Practical use:
+- Conversion: mold/tooling change
+- Conditioning: mold wax / after cleaning stabilization
+- Transfer cleaning / Compression cleaning: remove residue, verify mold-transfer condition
+- Dry cycle: check mechanism / motion path without full material risk
 
 ### Restart / FAI rule
 - If no input > 12 hours:
   - redo FAI before restart
+- After re-init / long stop / post-maintenance:
+  - verify remaining leadframe / pellet / mold condition before Start
+  - confirm recipe, operation mode, and machine ready state before production
 
 ### Model change rule
 Must verify:
 - mold chase
 - PR set
 - recipe
+- operation mode
+- tool / family / carrier reference when applicable
 
 ### Process readiness concern
-Missing proper mold cleaning / smoothing / conditioning before FAI can create hidden mold surface issues.
+Missing proper mold cleaning / smoothing / conditioning / qualification before FAI can create hidden mold surface instability.
 
----
+High-risk release gap after:
+- mold conversion
+- cleaning
+- recipe change
+- PM / taught-position adjustment
+- sensor or vacuum-related repair
+
+### Maintenance / PM focus
+Per shift / day main focus:
+- mold cleaning
+- vision backlight cleaning
+- leadframe guides cleaning
+- empty cull / dust / pellet dump / reject bins
+
+Weekly / monthly focus:
+- vacuum filter drain / check
+- clamp unit check
+- mold temperature verification
+- belt tension / motion path condition
+- plunger / center pin / UOD / transfer mechanism condition
+
+### Recipe / process control focus
+Critical recipe domains:
+- handling settings
+- press settings
+- transfer settings / transfer profile
+- temperature settings
+- cleaning settings
+- vacuum settings
+- vision settings
+- carrier / PR set / qualification status
+
+Rule:
+- Recipe must be qualified before production
+- Parameter change after conversion / debugging should require re-check / re-qualification according to local release rule
+
+### Quick checks for Molding
+When issue is unclear, prioritize:
+1. Physical blockage / mold contamination / loose hardware / jam
+2. Vacuum reach / leakage / false feedback / settle time
+3. Transfer path / clamp / push force / taught position
+4. Sensor / detection / false clear / vision / orientation
+5. Recipe / mode / family / PR mismatch
+6. Human reset / manual override / post-maintenance effect
+7. Interface / communication / upstream-downstream readiness
+
 
 ## 2.4 Laser
 
