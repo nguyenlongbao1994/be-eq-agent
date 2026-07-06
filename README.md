@@ -216,9 +216,8 @@ Trước khi tạo incident mới:
 4. Nếu khác machine nhưng cùng mechanism → mention “related pattern”
 
 ### 8.4 Incident Link Rule
-Trong `incidents/README.md`, cột cuối luôn dùng relative link:
-```md
-./2026/2026-06-11-laser232-panel-dropped.md
+Trong `incidents/README.md`, cột cuối luôn dùng relative link dạng:
+./YYYY/YYYY-MM-DD-issuexxx.md
 ## 9. Agent Rules Summary
 Agent phải:
 
