@@ -34,7 +34,7 @@ Repository này phải giúp kỹ sư và Agent:
 ## 2. Core BE Principle
 
 ### 2.1 Main Process Flow
-Water Clean → Baking → Plasma → Molding → Laser → Dry Ice → Plasma → CPF → Curing → Jigsaw → Tape → Sputter → AVI
+Water Clean → Baking → Plasma → Molding → Laser → Trend Dry Ice → Plasma → CPF → Curing → Jigsaw/Lasercut → cutting Dry Ice → Tape → Sputter → AVI
 
 ### 2.2 Main Troubleshooting Principle
 Phần lớn lỗi **không phải machine breakdown**.
