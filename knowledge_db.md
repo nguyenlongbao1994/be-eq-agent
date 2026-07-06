@@ -627,27 +627,280 @@ Laser issue không nên default là laser source fault.
 ## 2.5 Dry Ice / Trench Dry Ice / Cutting DIC
 
 ### Understanding
-Dry Ice is not only the nozzle.
-It is a full system including:
-- gas / CDA / N2
+Dry Ice / Trench Dry Ice / Cutting DIC phải được xem là **full cleaning system**, không chỉ là nozzle.
+Failure thường đến từ toàn chuỗi:
 - dry ice source
-- nozzle / robot
-- vacuum / pedestal
-- magazine / carrier / conveyor
-- scanner / software / SFIS / logs / alarms
+- CDA / compressed air quality
+- feeder / shaver / chute / nozzle
+- N2 / hot air / heating / drying
+- vacuum / chuck / clamp / pedestal / cleaning table
+- dust collector / exhaust / ventilation
+- scanner / 2D / camera / SECS / SFIS / software / host
+- loader / unloader / magazine / carrier / conveyor / robot interface
 
-### Rule
-Cold Jet output / pressure must not be adjusted freely outside spec.
+### Machine family
+Dry Ice trên line có thể gặp các họ máy chính:
+- Cold Jet dry ice cleaning system (ví dụ MicroClean / shaved dry ice type)
+- E&R custom Dry Ice Cleaner / Trench Dry Ice line
+- Intelume CCM-A200 / CCM-A201 Auto Dry Ice Cleaning system
 
-### Main troubleshooting groups
-- Cold Jet / output / dry ice feed
-- vacuum / pedestal
-- safety door / interlock
-- magazine / carrier transfer
-- scanner / 2D code reading
-- SFIS / SMD / software communication
-- false alarm vs actual status mismatch
+### Core engineering principle
+- Physical reality before signal
+- Dry Ice issue không nên mặc định coi là nozzle fault
+- Phần lớn lỗi bắt đầu từ:
+  - moisture / humidity
+  - weak / unstable air
+  - poor dry ice feeding
+  - shaver / blade / chute wear
+  - wrong recipe / wrong path / wrong process
+  - scanner / host / interface mismatch
+- Humidity / condensation là top repeat mechanism đối với clog, output drop, unstable cleaning và intermittent alarm
 
+### Main machine structure
+#### Common full system blocks
+- dry ice machine / dry ice source
+- feeder / pusher / shaver / chute
+- nozzle / nozzle angle / nozzle spacing
+- robot / motion path / cleaning path
+- cleaning table / vacuum / lift / clamp / gate
+- preheat station
+- drying lane / hot air / ion / N2 / chamber gas control
+- dust collector / negative pressure / filter
+- carrier / loader / unloader / conveyor / cassette / magazine
+- scanner / 2D / camera / recipe / SECS-GEM / SFIS / host if integrated
+
+#### Intelume CCM-A200 / CCM-A201 focus
+- loading / unloading area
+- preheat area
+- cleaning area
+- dry lane
+- input/output robot arms
+- dual dry ice machines / dual nozzles
+- nozzle spacing axis / nozzle angle control
+- 2D code reading for tray and product
+- process page / path page / account / record / alarm / maintenance page
+
+#### E&R Dry Ice Cleaner focus
+- LD / ULD / runway / chamber
+- cleaning A/B zones
+- fixed nozzle / movable nozzle
+- hot air / N2 / Dust Collector / CO2 concentration monitor
+- vacuum detect / gate / side clamp / panel detect
+- host local-remote / recipe / parameter / log / alarm detail
+
+### Utility / facility rule
+Dry Ice chỉ ổn nếu utility chain đúng:
+- dry ice source / media condition
+- compressed air / CDA clean and dry
+- adequate pressure and flow
+- exhaust / ventilation available
+- dust collector available
+- vacuum system healthy
+- humidity under control
+- if equipped: N2, hot air, heater, CO2 monitor, camera/reader, robot ready
+
+#### Common utility thinking
+- Nếu air line có nước hoặc dew point không tốt, feeder/chute/nozzle rất dễ đóng băng
+- Nếu dust exhaust yếu hoặc filter block, cleaning quality và alarm chain sẽ xấu
+- Nếu CO2 concentration cao, phải ưu tiên safety / ventilation trước khi nghĩ tới production
+
+### Operation / startup / shutdown
+#### Common startup logic
+1. Confirm power / UPS / PC / software normal
+2. Confirm air / CDA / N2 / vacuum / dust collector / dry ice machine ready
+3. Confirm trough / feeder / chute / nozzle area dry and clean
+4. Purge air before loading or before restarting after long idle / break
+5. Add dry ice correctly, push pusher plate to proper contact position
+6. Confirm recipe / process / path / product program / host mode correct
+7. Confirm safety doors closed and alarm-free
+8. Run initialization / home / servo-on / origin search where required
+9. Only then allow auto run
+
+#### Common shutdown logic
+- stop auto mode first
+- stop dry ice output
+- remove remaining dry ice if required
+- clean feeder / trough / machine interior
+- depressurize / bleed line if applicable
+- stop software / PC / machine power by standard sequence
+
+### Process / recipe / teaching focus
+Dry Ice machine có thể có process hoặc path setup, không được coi là “fixed machine”:
+- product recipe / process name
+- path / route / robot movement count
+- nozzle angle
+- nozzle spacing
+- output wait time / pre-spray logic
+- cleaning speed / move speed
+- single-unit vs full-panel clean
+- dry ice detect threshold
+- dry ice minimum quantity per cycle
+- idle timeout / pre-spray after idle
+- preheat / clean table / hot air / drying time
+- pressure / flow / humidity / CO2 alarm thresholds
+- 2D reader positions / tray code / product code / SFIS path / host mode
+
+### Main failure families
+- dry ice output weak / intermittent
+- no dry ice output
+- chute / feeder / nozzle clogging
+- dry ice low / empty / insufficient for one cycle
+- air pressure low / air flow abnormal
+- dry ice machine idle timeout
+- dry ice machine power off / ready missing
+- dry ice spray abnormal based on IR or temperature detect
+- nozzle angle mismatch
+- vacuum abnormal on cleaning table / pedestal / chuck
+- dust collector negative pressure too low / too high
+- filter blocked
+- chamber / humidity / condensation issue
+- CO2 concentration abnormal
+- hot air / preheat / clean table temperature abnormal
+- loader-unloader / conveyor / arm / robot / gate / cylinder abnormal
+- 2D reader / tray code / material code / host / SFIS mismatch
+
+### Main failure mechanism
+Typical Dry Ice chain:
+small moisture / poor air / dirty trough / worn shaver / long idle
+→ ice build-up / feeding unstable / pressure-drop / output delay
+→ nozzle clog / false low-ice / false spray-abnormal / cleaning miss
+→ quality NG / stop line / repeated restart / repeat issue
+
+For Cutting Dry Ice, a second common chain is:
+wrong path / wrong angle / wrong nozzle spacing / wrong detect threshold
+→ spray misses target or output judged abnormal
+→ machine stop / partial clean / repetitive alarm / false debug loop
+
+### Main watch points
+- humidity trend vs clogging trend
+- moisture in line / trap / feeder / water bucket
+- blast/air pressure drop during run
+- air flow deviation
+- dry ice detect stability
+- dry ice consumption per run
+- dual dry ice machine balance
+- nozzle angle drift
+- nozzle spacing drift
+- IR temp detect alignment
+- vacuum / negative pressure trend
+- filter blockage trend
+- dry ice machine idle time
+- preheat / clean table / hot air temperature drift
+- scanner / 2D / host / SFIS read fail trend
+- manual clear / manual override frequency after alarm
+
+### Quick checks
+1. Confirm machine family first:
+   - Cold Jet / E&R / Intelume CCM-A200 / CCM-A201
+
+2. Physical reality first:
+   - dry ice present?
+   - feeder / pusher / shaver / chute free?
+   - nozzle clogged?
+   - trough wet?
+   - dry ice sticking / melting / bridging?
+   - product / tray / carrier physically in correct position?
+
+3. Check utility:
+   - CDA / air pressure
+   - air flow
+   - hose size / line restriction
+   - moisture trap / aftercooler / dryer
+   - dust collector / negative pressure
+   - vacuum pump
+   - N2 / hot air / heater if used
+   - CO2 ventilation / safety condition
+
+4. Check output path:
+   - nozzle angle
+   - nozzle spacing
+   - robot path / route / movement count
+   - pre-spray / idle handling
+   - dry ice detect sensor / IR sensor position
+
+5. Check integrated mechanism:
+   - lift / gate / clamp / cylinder / conveyor / robot arm
+   - clean table vacuum and tray clamp
+   - preheat / dry lane motion
+   - loader-unloader ready and no jam
+
+6. Check software / interface:
+   - process recipe
+   - path file / route program
+   - local / remote / host mode
+   - SECS / SFIS / scanner / 2D / material code path
+   - program damaged or wrong product loaded
+
+7. Check repeat mechanism:
+   - long idle?
+   - high humidity?
+   - after maintenance?
+   - after filter change / blade change / nozzle clean?
+   - after product/path change?
+
+### Maintenance / PM focus
+#### Daily
+- keep feeder / chute / trough dry and clean
+- remove remaining dry ice and moisture
+- inspect nozzle / hose / cable / fitting
+- inspect dry ice machine power / ready state
+- inspect water bucket / condensation
+- inspect safety doors / covers / interlocks
+- verify vacuum / dust collector / airflow
+- verify scanner / 2D / indicator / alarm-free startup
+
+#### Weekly / routine
+- inspect shaver / blade / skate life
+- inspect feeder / pusher / chute wear
+- inspect dust collector filter / negative pressure trend
+- inspect air line water / trap / filter / dryer
+- inspect nozzle angle / spacing / teaching values
+- inspect vacuum cups / seals / clamp / gate / cylinders
+- inspect heater / preheat / hot air / clean table temperatures
+- inspect reader positions and code reading quality
+
+#### After maintenance / cleaning / long idle
+- purge air first
+- confirm no ice build-up
+- confirm nozzle path and angle
+- confirm pressure / flow / detect thresholds
+- confirm vacuum and filter state
+- confirm process / path / recipe / scanner settings
+- do not release machine if these are skipped
+
+### Safety / interlock rule
+- CO2 is an asphyxiation risk under poor ventilation
+- dry ice can injure skin and eyes
+- static / bonding / grounding may matter depending on line condition
+- never bypass safety door, interlock, ventilation or CO2 alarm logic
+- if CO2 concentration abnormal, treat as safety-first issue, not nuisance alarm
+- if Dust Collector / vacuum / filter alarms exist, do not assume cleaning quality is still okay
+
+### Rule for incident / repository
+Khi ghi incident hoặc update knowledge cho Dry Ice / Cutting Dry Ice, bắt buộc ghi rõ:
+- machine family
+- model
+- dry ice source / media type
+- air quality condition
+- pressure / flow
+- humidity / condensation condition
+- nozzle / shaver / blade condition
+- recipe / path / angle / spacing condition
+- vacuum / dust collector / filter condition
+- scanner / 2D / host / SFIS / SECS condition if integrated
+- whether issue happened after long idle / maintenance / cleaning / product change
+
+### Interpretation rule
+Dry Ice issue không nên default là nozzle issue.
+Ưu tiên phân tích theo thứ tự:
+- air quality / moisture / humidity
+- dry ice media and feeding
+- shaver / blade / feeder wear
+- nozzle / angle / spacing / detect alignment
+- vacuum / dust / exhaust / CO2 safety chain
+- robot / path / gate / clamp / tray handling
+- scanner / host / SFIS / SECS / software
+- only then conclude local hardware failure
 ---
 
 ## 2.6 Jigsaw
