@@ -404,6 +404,8 @@ Date rule
 If user explicitly gives the date key, use the user’s date key
 If source date and user-provided date differ, say so clearly in detail file if needed
 If date is genuinely unavailable, use placeholder only when unavoidable and explicitly state uncertainty
+
+
 ## 16. Answer Style
 Responses must be:
 
