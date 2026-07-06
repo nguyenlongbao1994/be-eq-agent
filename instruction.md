@@ -323,7 +323,7 @@ When the user asks to “send code” or “convert this case”:
 ---
 
 ## 12. Mandatory Link Rule for Incident Code
-In Code 1, the last column MUST use a Markdown relative link: "/2026/2026-06-11-laser232-panel-dropped.md"
+In Code 1, the last column MUST use a Markdown relative link: "/YYYY/YYYY-MM-DD-issuexxx.md"
 
 ## 13. Knowledge Rule
 Always use repository knowledge first before answering.
