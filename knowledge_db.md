@@ -17,7 +17,7 @@ Detailed cases should stay in `incidents/YYYY/*.md`.
 # 1. BE SYSTEM FOUNDATION
 
 ## 1.1 Main Process Flow
-Water Clean → Baking → Plasma → Molding → Laser → Dry Ice → Plasma → CPF → Curing → Jigsaw → Tape → Sputter → AVI
+Water Clean → Baking → Plasma → Molding → Laser → Trend Dry Ice → Plasma → CPF → Curing → Jigsaw/Lasercut → cutting Dry Ice → Tape → Sputter → AVI
 
 ## 1.2 Core Engineering Principle
 Most failures are **not machine breakdown**.
