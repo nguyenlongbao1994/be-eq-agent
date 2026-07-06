@@ -1,0 +1,88 @@
+---
+id: INC-2026-04-18-LASER227-PANEL-POPPED-OUT-CARRIER
+date: 2026-04-18
+station: Laser combine
+machine: EQLAS00227
+model: C10.5
+issue_type:
+  - Human
+  - Process
+  - Transfer
+  - Interlock
+status: Recovered after control update
+owner: EQ / IDL
+tags:
+  - laser227
+  - panel-pop
+  - collision
+  - transfer
+---
+
+# Laser #227 – Panel popped out of carrier
+
+## Issue
+- Machine: EQLAS00227
+- Model: C10.5
+- Problem: Panel popped out of carrier
+- Impact: No SIP NG
+
+---
+
+## Timeline
+- Before: Machine stop for shift change
+- 08:34 → Machine auto power measurement → alarm
+- IDL switch to manual mode for power check
+- 08:40 → Laser table move while panel not fully out
+→ Panel popped out
+
+---
+
+## Symptom
+- Panel ejected from carrier
+- No full collision damage
+- No scrap (0 SIP NG)
+
+---
+
+## Root Cause
+1. IDL performed manual power check
+2. Did NOT verify machine status
+3. Panel still inside laser table
+4. Laser table moved → physical collision
+
+---
+
+## Failure Mechanism
+- Laser out logic:
+  - Detect panel exit condition (not fully validated)
+- When switching to manual:
+  - No interlock for panel presence
+- Result:
+  - Table moves
+  - Panel partially constrained → pops out
+
+---
+
+## Actions
+1. Train IDL to check machine status before manual operation
+2. Enforce verification before switching mode
+
+---
+
+## Current Status
+- Machine running normally
+- No NG product
+- Control awareness updated
+
+---
+
+## Impact
+- Quality: 0 NG
+- Production: no major impact
+- Risk: HIGH (can escalate to carrier drop → like previous case)
+
+---
+
+## Open Risk
+- Same root chain as carrier drop case
+- Need interlock improvement
