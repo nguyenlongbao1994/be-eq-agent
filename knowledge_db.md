@@ -77,18 +77,242 @@ Do not assign downstream issues to Water Clean unless:
 ## 2.2 CPF
 
 ### Understanding
-Main CPF failure mode is **glue-related instability**, not direct collision.
+CPF chủ yếu là nền tảng dispense của dòng **Nordson Asymtek Spectrum S-900 / S2-900**.
+Rủi ro cốt lõi của CPF là **glue-related instability**, không phải mặc định machine breakdown.
+
+Machine family / platform chính:
+- Spectrum S-900 / S-900N series
+- Spectrum II S2-900 / S2-900P / S2-9XXC series
+
+Ứng dụng phổ biến:
+- underfill
+- dam & fill
+- encapsulation
+- lid seal
+- cavity fill
+- silicone / reagent dispense
+
+### Core engineering principle
+- FAI pass không đồng nghĩa process margin đủ rộng
+- CPF issue thường bắt đầu từ material / pressure / viscosity / calibration chain
+- Physical reality before signal:
+  - glue age
+  - air bubble
+  - pressure stability
+  - valve/nozzle condition
+  - scale / flow-rate calibration
+- Đừng default quy lỗi cho software/vision nếu chưa loại trừ material, air, valve và scale
+
+### Main machine / process structure
+CPF là hệ thống tích hợp nhiều khối:
+- dispensing valve / jet / needle
+- fluid reservoir / bulk fluid / syringe
+- fluid pressure / valve pressure / cooling-coaxial pressure
+- vision / fiducial / workpiece alignment
+- height sensing
+- service station:
+  - dispense tile
+  - tactile sensor
+  - purge station
+  - scale
+- conveyor / lane / queue station
+- heater / substrate heating / CpH
+- software recipe / Fluidmove / fluid file / vision file / recipe file
+
+### Main machine families / feature focus
+#### S-900 / S-900N
+- inline dispense platform cho semiconductor / assembly
+- hỗ trợ underfill, cavity fill, die attach, encapsulation
+- mechanical height sensor là base, laser height sensor là option
+- MFC là option ở một số cấu hình
+- programmable fluid / valve pressure tiêu biểu trên S-92X
+
+#### S2-900 / Spectrum II
+- high-volume inline dispensing system
+- cấu hình linh hoạt hơn, support nhiều valve/jets hơn
+- scale / MFC / CPJ / Monocle vision / Fids-on-the-Fly / programmable pressure mạnh hơn
+- cleanroom, pre/post queue, CpH, lift table là các option quan trọng
+
+### Supported valves / applicators
+Các manual xác nhận CPF support nhiều loại valve / jet, trong đó các loại đáng chú ý:
+- DJ / DispenseJet
+- DV series
+- NexJet
+- IntelliJet
+- DJ-9000 / DJ-9500 là nhóm hay gặp
+- needle dispensing và jet dispensing có logic calibration khác nhau
+
+### Critical technical focus
+- glue / fluid condition
+- pressure stability
+- valve / nozzle / seat / o-ring condition
+- scale accuracy / MFC / CPJ / dot weight
+- vision-to-valve offset / fiducial / local machine offset
+- heater / temperature / viscosity control
+- low fluid / low pressure detection chain
+- purge / priming / vacuum / suckback condition
+
+### Software / traceability
+CPF dùng **Fluidmove / FmXP** và file structure điển hình gồm:
+- `.flu` = fluid file
+- `.fmw` = dispense program
+- `.avw` = vision file
+- `.rcp` = recipe
+- `.log` = production statistics / logging
+
+Phần mềm hỗ trợ:
+- Fluid Manager
+- valve setup
+- height sensor setup
+- scale setup
+- conveyor setup
+- vision setup
+- prompted setup / scripted setup
+- machine offsets / local machine offsets
+- setup logging / SPC data logging
+- barcode support / RFID / scanner setup
+- user levels: Service / System / Production
+
+### Main troubleshooting logic
+Khi CPF có issue, ưu tiên nghĩ theo chuỗi:
+small issue →
+pressure / viscosity / bubble / offset / calibration mismatch →
+dispense amount drift / dot-line instability / false alert →
+quality NG / intermittent defect / batch instability
+
+Nếu output CPF bất thường, ưu tiên check:
+- glue age / potlife / batch history
+- pressure setting thực tế và pressure response
+- valve/nozzle contamination, wear hoặc mismatch
+- scale và flow-rate calibration
+- heater / substrate heat / viscosity condition
+- vision / offset / fiducial setup
+- low fluid / low pressure detection threshold
 
 ### Main watch points
-- Glue overflow
-- Dot weight instability
-- Valve / chamber wear
-- Process margin sensitivity
-- Nozzle validation / trial
+- glue overflow
+- dot weight instability
+- valve / chamber wear
+- process margin sensitivity
+- nozzle validation / trial
+- batch-to-batch viscosity drift
+- priming / purge không đủ
+- intermittent air / bubble / stale glue pattern
+- scale drift sau move / cleaning / maintenance
+- sensor low fluid / low pressure báo không đúng timing
+
+### High-risk failure families in CPF
+- glue-related instability
+- pressure instability
+- stale / expired / out-of-potlife material
+- air bubble / incomplete priming
+- valve degradation / seat-o-ring wear
+- scale / MFC / CPJ calibration drift
+- vision / valve offset mismatch
+- manual override / force run khi chưa re-offset / recalibrate
+- false low fluid / false low pressure detection
+- FAI pass nhưng batch margin thực tế quá sát
+
+### Main failure mechanisms
+- batch margin quá sát:
+  - FAI pass nhưng không đại diện cho MP
+- glue ngậm khí / ngậm ẩm:
+  - tạo intermittent output, khó lặp lại nếu chỉ spot-check
+- valve / nozzle wear:
+  - dot-line không đồng đều, lệch lượng bơm
+- scale drift hoặc chưa recalibrate:
+  - MFC / CPJ bù sai → lượng keo sai
+- offset giữa camera / valve / scale lệch sau thay đầu, cleaning hoặc maintenance
+- low fluid / low pressure threshold không khớp:
+  - machine báo sai hoặc báo trễ
+
+### Quick checks
+1. Check material first:
+   - glue lot / expiry / potlife / storage / warm-up
+2. Check physical dispense chain:
+   - syringe / reservoir / cap sealing / air bubble / priming / purge
+3. Check pressure:
+   - main air
+   - fluid pressure
+   - valve pressure
+   - cooling/coaxial pressure
+   - vacuum / suckback nếu có
+4. Check valve / nozzle:
+   - contamination
+   - wear
+   - wrong type / wrong setup
+5. Check scale / calibration:
+   - recent MFC / CPJ / flow-rate / dot-weight calibration
+   - scale level / scale condition
+6. Check heater / viscosity:
+   - substrate heating
+   - needle/nozzle heater
+   - CpH / preheat / cool-down logic
+7. Check vision / offsets:
+   - fiducial
+   - camera
+   - local machine offset
+   - valve bias / master offset
+8. Check software / human factors:
+   - wrong fluid file / recipe
+   - manual override
+   - force run
+   - skipped setup after maintenance / cleaning / valve change
+
+### Maintenance / PM focus
+#### Daily
+- check air / water trap / clean dry air
+- check purge cup / scale cup / purge boot
+- verify glue handling / reservoir / line cleanliness
+- verify pressure gauges / digital gauge status
+- verify no abnormal leak / drip / overflow
+- keep service station and dispense area clean
+
+#### Weekly / routine
+- verify scale level / scale calibration condition
+- verify board sensor / height sensor / tactile sensor
+- inspect valve/nozzle wear and contamination
+- inspect cable / linear guide / belt / conveyor condition
+- inspect water trap và drain moisture
+- verify heater and needle heater condition
+
+#### After maintenance / cleaning / hardware touch
+- re-check offsets
+- re-check scale / MFC / CPJ
+- re-check valve setup
+- re-check pressure response
+- re-check vision / fiducial / teaching
+- do not release machine if these are skipped
 
 ### Rule
-FAI pass does not mean process margin is stable enough.
+FAI pass does **not** mean process margin is stable enough.
 
+Bắt buộc extract khi ghi incident CPF:
+- machine model / platform
+- valve / nozzle type
+- fluid lot / expiry / potlife
+- pressure setting
+- scale / MFC / CPJ status
+- heater status
+- calibration / offset history
+- time since maintenance / cleaning / valve change
+
+### Interpretation rule
+CPF issue nên ưu tiên interpret là:
+- Process instability
+- Material / glue margin issue
+- Pressure / valve / nozzle issue
+- Sensor / detection mismatch
+- Calibration / offset drift
+- Human setup / post-maintenance release gap
+
+Không default là machine breakdown nếu chưa loại trừ:
+- glue
+- pressure
+- calibration
+- heater
+- offset
+- manual operation effect
 ---
 
 ## 2.3 Molding
