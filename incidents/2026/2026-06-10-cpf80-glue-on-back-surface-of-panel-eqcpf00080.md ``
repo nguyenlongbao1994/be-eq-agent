@@ -1,0 +1,116 @@
+---
+id: INC-2026-06-10-CPF80-GLUE-ON-BACK-SURFACE-OF-PANEL-EQCPF00080
+date: 2026-06-10
+station: CPF
+machine: EQCPF00080
+model: C10.5
+issue_type:
+  - Human
+  - Process
+  - Valve
+  - Glue leak
+  - Inspection gap
+status: Recovered after table cleaning / Checklist and training updated
+owner: EQ / DL / PD
+tags:
+  - cpf80
+  - glue-back-surface
+  - glue-leak
+  - table-lift-center
+  - valve
+  - eqcpf00080
+---
+
+# N243 | CPF80_Glue on the back surface of the panel
+
+## Issue Description
+- Issue: Glue on the back surface of the panel
+- Model: C10.5
+- Station: CPFILLING
+- Machine: EQCPF00080
+- Impact: 18 panel
+
+## Customer Impact
+- No impacts
+
+## Containment Actions
+- Stop machine and find root cause
+
+## Timeline
+- 21:30 10/06/2026
+  - Machine running normal
+- 22:00 10/06/2026
+  - EQ replace valve as schedule
+- 22:10 10/06/2026
+  - Glue leakage but not check table center
+- 22:15 10/06/2026
+  - Machine continue production
+- 04:00 11/06/2026
+  - Detect glue on the back surface of the panel after curing
+- 04:30 11/06/2026
+  - EQ clean table center
+  - Machine can continue production
+
+## Symptom
+- Glue was found on the back surface of panels after curing.
+- 18 panels were impacted.
+- Glue leakage happened earlier during valve replacement, but the center lift table was not checked at that time.
+
+## FA & RC
+- DL did not tighten the glue tube to the glue bottle securely when replacing the valve
+- Glue leaked
+- When the glue leakage occurred, DL did not check the table lift center and did not call IDL for checking this issue
+
+### Conclusion
+- Glue leaked onto table lift center, but it was not detected
+- When panels passed through, glue stuck to the bottom / back surface
+
+## Root Cause
+- During valve replacement, DL did not tighten the glue tube to the glue bottle securely.
+- Glue leaked onto the center lift table.
+- The leakage on the table lift center was not checked and was not escalated for IDL inspection.
+- When panels passed through the contaminated table lift center, glue transferred to the back surface of the panels.
+
+## Failure Mechanism
+- Valve replacement created a glue tube connection issue.
+- Because the glue tube was not tightened securely, glue leaked out.
+- The leaked glue contaminated the center lift table.
+- Since the contamination was not detected immediately, production continued.
+- Panels passing across the contaminated center lift table picked up glue on the back surface.
+- The defect was only detected later after curing.
+
+## Corrective Actions
+1. Clean the surface of the center lift table → OK
+2. Hand over the machine for PD team to recover production → OK
+
+## Long-Term Corrective Actions
+1. Train DL to check after tightening the glue tube to the glue bottle and chamber of valve → Done
+2. Add glue tube connection confirmation to the FAI checklist → Done
+3. Add 2 columns, “self check” and “cross check”, to the valve replacement checklist for signature verification during cross-check inspections → Done
+
+## Current Status
+- The contaminated center lift table was cleaned.
+- Machine was handed over for production recovery.
+- Training and checklist updates were completed.
+- Production continued normally after cleaning.
+
+## Impact
+- Quality: 18 panels affected
+- Production: temporary stop for root-cause finding and cleaning
+- Safety: not stated in the slide
+- Repeat risk: possible if glue tube tightening and post-replacement cross-check are not controlled
+
+## Open Risk / Follow-up
+- Need to keep glue tube connection confirmation in the FAI checklist
+- Need to enforce self-check and cross-check signatures in valve replacement checklist
+- Need to monitor repeat glue leakage after valve replacement activities
+
+## Evidence
+- Timeline shows glue leakage after scheduled valve replacement and later detection after curing
+- FA & RC states:
+  - DL did not tighten glue tube securely
+  - glue leaked
+  - table lift center was not checked
+  - glue transferred to bottom / back surface of panels
+- Corrective actions show center lift table cleaning and production recovery
+- Long-term actions show training and checklist control updates
