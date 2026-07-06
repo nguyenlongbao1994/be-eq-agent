@@ -53,25 +53,315 @@ When input is unclear, use this priority:
 
 ## 2.1 Water Clean
 
+### Machine family
+Trạm Water Clean hiện sử dụng **2 loại máy chính**:
+- **TZ-8500 Flip-chip de-flux cleaner**
+- **AC-7000 online PCBA Cleaning Machine**
+
+=> Khi support / viết incident / review issue, phải xác nhận rõ machine family là **TZ-8500** hay **AC-7000** trước khi kết luận nguyên nhân hoặc lookup manual.
+
 ### Understanding
-- Core Water Clean process is relatively stable
-- Water Clean is not the default high-risk station
+Water Clean là trạm tương đối ổn định, nhưng failure thực tế không chỉ đến từ “rửa không sạch”.
+Issue thường đi theo full chain:
+- transfer / conveyor / chain / jam
+- liquid chemistry / concentration / mixing
+- spray / pump / nozzle / pressure
+- DI rinse / overflow / resistivity
+- air knife / blower / drying
+- interface / online-offline / no-board detect
+- human operation / post-maintenance release gap
 
-### Main watch points
-- Loader / unloader aging
-- Transfer interface stability
-- Scanner robustness
-- Carrier code compatibility
+=> Không nên default quy lỗi về washing quality nếu chưa loại trừ transfer / chain / liquid / pressure / drying / sensor chain.
 
-### Rule
-Do not assign downstream issues to Water Clean unless:
-- there is direct surface evidence, or
-- transfer / handshake clearly points back to Water Clean
+### Core engineering principle
+- Physical reality before signal
+- Nếu alarm jam / block:
+  - ưu tiên xác thực **thật sự có board/card stuck hay chỉ false alarm**
+- Nếu cleaning NG:
+  - ưu tiên xem lại concentration / pressure / heating / DI quality / drying
+- Nếu máy chạy nhưng output bất ổn:
+  - ưu tiên check filter / nozzle / chain / overflow / pump / blower
+- Nếu issue sau PM / cleaning / chemical change:
+  - ưu tiên nghi release gap / wrong setup / incomplete restore trước
 
-### Chemical / filter control
-- N600: replace every 2 weeks
-- Filter: replace/check every 1–2 weeks
+### Main machine structure
+#### TZ-8500
+Process chain điển hình:
+- solvent soak
+- chemical high pressure spray 1
+- chemical high pressure spray 2
+- DI natural rinse
+- high pressure DI rinse 1
+- high pressure DI rinse 2
+- DI natural rinse
+- blower drying
 
+Main utility / module:
+- raw liquid tank
+- mixing tank
+- DI water switch
+- waste liquid discharge path
+- pressure display
+- chain speed display
+- temperature controller
+- conductivity / concentration display
+- heater / blower / pump / EMO / lighting
+
+#### AC-7000
+Process chain điển hình:
+- Cleaning 1
+- Cleaning 2
+- Chemical Isolation
+- Raising 1
+- Raising 2
+- Raising 3
+- Final Spraying (DI)
+- Air-knife Drying 1
+- Air-knife Drying 2
+- Hot Air Drying
+
+Main utility / module:
+- chemical cleaning tank
+- pre-rinse tank
+- rinse tanks
+- final DI spray
+- air-knife isolation
+- hot air drying chamber
+- DI water inlet / outlet / drainage
+- flow meter / resistivity meter
+- pressure gauges
+- heaters / blowers / pumps
+- PLC + touch panel
+- online / offline interface
+
+### Process / chemistry focus
+#### TZ-8500
+- current solvent concept:
+  - **N600 + DI water** mixed solvent
+- mixing tank must keep stirring during production to prevent stratification
+- first blending requires manual blending
+- DI first, then raw solvent
+- stir around 3 minutes before use
+- concentration check required
+- ionic contamination check required
+
+#### AC-7000
+- select suitable cleaning solution by product
+- fill cleaning tank to target level
+- fill DI water to rinse tanks
+- set recipe / formula before run
+- key formula items:
+  - cleaning temperature
+  - pre-rinse temperature
+  - rinse temperature
+  - drying temperature
+  - mesh belt speed
+  - pressure deviation alarm
+  - resistivity alarm
+  - substrate sensing time
+  - stagnation / shielding / online timing
+  - concentration ratio / replenish timing
+
+### Key parameters / ranges
+#### TZ-8500 practical focus
+- chain speed setting:
+  - **10 mm/s**
+- station 1-6 temperature:
+  - **60 ± 5 °C**
+- drying section:
+  - **85 °C**
+- pure water tank:
+  - **65 °C** (preheat purpose)
+- spray pump motor frequency:
+  - start from **30 Hz**
+- upper spray pressure:
+  - **0.55 – 0.65 MPa**
+- lower spray pressure:
+  - **0.45 – 0.55 MPa**
+
+#### AC-7000 practical focus
+- working speed:
+  - **10 – 150 cm/min**
+- suggested speed:
+  - **60 cm/min**
+- cleaning / rinse working pressure:
+  - **0.1 – 0.4 MPa**
+- final DI spray pressure:
+  - **0.3 – 0.4 MPa**
+- final DI water usage:
+  - typically **8 – 12 L/min**
+- DI resistivity must be monitored continuously
+- inverter frequency range:
+  - **10 – 50 Hz**
+- pressure alarm uses deviation after startup reference
+
+### Main failure families
+- board / panel stuck
+- conveyor / chain abnormal
+- nozzle blockage
+- pump pressure unstable
+- water / chemical level low
+- filter element blocked
+- spray pressure low / unstable
+- poor cleaning effect
+- cleaning chemistry concentration low
+- DI quality poor / resistivity low
+- overflow insufficient / contamination accumulation
+- blower / air knife weak
+- drying insufficient
+- heating not reaching set point
+- online handshake issue
+- false jam / false detect / no-board logic issue
+- post-maintenance setup restore incomplete
+
+### Main failure mechanism
+Typical Water Clean chain:
+small contamination / wrong concentration / filter block / nozzle choke / chain wear
+→ pressure drift / spray coverage loss / drying instability / slow transport / false jam
+→ cleaning NG / board stuck / repeat alarm / unstable output
+
+Another common chain:
+manual recovery / partial reset / parameter not restored after PM
+→ machine can run but state no longer matches physical reality
+→ intermittent jam / poor cleaning / false confidence release
+
+### Quick checks
+1. Confirm machine family first:
+   - TZ-8500 or AC-7000
+
+2. Physical reality first:
+   - really stuck board?
+   - chain smooth?
+   - conveyor clear?
+   - nozzles actually spraying?
+   - blower actually running?
+   - any leakage / overflow / splash abnormal?
+
+3. Check liquid / chemistry:
+   - correct chemical?
+   - concentration in range?
+   - mixing completed?
+   - tank level normal?
+   - liquid too dirty?
+   - replacement interval overdue?
+
+4. Check spray / pump / filter:
+   - pressure stable?
+   - upper/lower pressure in range?
+   - filter blocked?
+   - nozzle clogged?
+   - pump current / relay / inverter normal?
+
+5. Check DI / rinse / quality:
+   - DI inlet open?
+   - flow enough?
+   - resistivity normal?
+   - rinse tank changed / cleaned according rule?
+   - overflow enough to prevent contamination build-up?
+
+6. Check heating / drying:
+   - cleaning temp reached?
+   - drying temp reached?
+   - air knife strong enough?
+   - blower filter dirty?
+   - drying fan running?
+   - hot air actually circulating?
+
+7. Check transfer / interface:
+   - upstream/downstream ready?
+   - online/offline mode correct?
+   - stagnation / substrate length setting correct?
+   - board detect sensors normal?
+
+8. Check post-maintenance / post-change release gap:
+   - nozzle reinstalled correctly?
+   - filter replaced and locked?
+   - valves reopened correctly?
+   - sensor / float / thermocouple shifted?
+   - pressure / speed / recipe uploaded again?
+
+### Special jam handling rule
+If Water Clean jam / stuck is found:
+1. Press emergency stop
+2. Turn off heaters
+3. Open doors / improve ventilation if needed
+4. Remove stuck board and all boards inside machine
+5. Re-clean affected boards on another machine within local control rule if oxidation risk exists
+6. Focus check on chain / transfer / blocking position
+7. Repair damaged area
+8. Dry run machine
+9. Redo FAI before normal production
+
+If alarm says jam but no actual stuck board found:
+- acknowledge / mute alarm only after physical verification
+- resume auto run
+- observe continuously for at least 30 minutes before release
+
+### Maintenance / PM focus
+#### Daily
+- keep machine surface clean
+- check chain / conveyor status
+- inspect spray status
+- inspect pressure gauges
+- inspect tank level
+- clean table / visible residues
+- for TZ-8500:
+  - confirm DI switch open
+  - confirm waste valve in correct state
+- for AC-7000:
+  - verify alarm / resistivity / flow display normal
+
+#### Shift / routine
+- chemical tank circulation / filtering
+- rinse tank water replacement
+- clean all filter screens
+- inspect nozzles and ensure flow smooth
+- inspect blower inlet filter
+- inspect overflow / drainage / leakage
+
+#### Weekly
+- clean chemical / rinse tank
+- clean box filter screen
+- clean nozzles
+- inspect fan filter
+- inspect chain tension / chain teeth / lubrication
+- inspect level sensor / float / thermocouple
+- inspect air knife / spray rod / filter element
+
+#### Monthly
+- include all daily + weekly items
+- full DI water flushing cycle
+- clean all tanks thoroughly
+- check overheat protection
+- replace filter element as needed
+- grease chains / bearings / transmission
+- inspect motor / relay / inverter / blower condition
+
+### Rule for incident / repository
+Khi viết incident hoặc update knowledge cho Water Clean, bắt buộc ghi rõ:
+- machine family
+- model
+- chemical type
+- concentration status
+- DI quality / resistivity
+- pressure status
+- chain / conveyor condition
+- filter / nozzle status
+- heating / drying status
+- online-offline / interface condition
+- whether issue happened after PM / cleaning / chemical change / jam recovery
+
+### Interpretation rule
+Water Clean issue không nên default là “wash not clean”.
+Ưu tiên phân tích theo thứ tự:
+- transfer / chain / real jam
+- liquid level / concentration / contamination
+- filter / nozzle / pressure / pump
+- DI rinse / resistivity / overflow
+- blower / air knife / drying
+- sensor / interface / online setting
+- human release gap / PM restore gap
+- only then conclude machine hardware failure
 ---
 
 ## 2.2 CPF
