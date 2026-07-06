@@ -1,857 +1,593 @@
-# BE EQ Troubleshooting Log
+# BE EQ Troubleshooting Playbook
 
 ## Scope
-This file consolidates troubleshooting knowledge, issue history, process learning, automation integration notes, and line-follow up items captured in the chat history.
+This file is the **line-ready troubleshooting playbook** for BE EQ and Agents.
 
-## Data Integrity Rule
-- Only information explicitly mentioned in the chat history is included.
-- If a date was not clearly validated in the chat, the item is placed under **Undated / Training Knowledge** instead of forcing a date.
-- This file is intended for:
-  - BE EQ troubleshooting
-  - daily / weekly reporting
-  - training reference
-  - Watch / Hana shared-line support
-  - automation / SFIS line integration
+Use this file for:
+- quick troubleshooting at line
+- short engineering reporting
+- failure-chain identification
+- repeat issue comparison
+- incident conversion guidance
+- training support for EQ / PD / ME
+- Watch / Hana support when troubleshooting touches readiness, automation, or shared-capacity risk
+
+This file should focus on:
+- how to troubleshoot
+- what to check first
+- how to classify issue
+- how to write outputs consistently
+- what recurring patterns matter most
+
+Detailed case history should mainly stay in:
+- `incidents/README.md`
+- `incidents/YYYY/*.md`
 
 ---
 
-# 1. BE SYSTEM FOUNDATION
+# 1. Core Troubleshooting Principle
 
-## 1.1 BE Main Process Flow
-Water Clean → Baking → Plasma → Molding → Laser → Dry Ice → Plasma → CPF → Curing → Jigsaw → Tape → Sputter → AVI
+Most BE failures are **not** full machine breakdown.
 
-## 1.2 Core Troubleshooting Principle
-Most failures are **not** machine breakdown.
-
-Main failure drivers:
+Common failure sources:
 - Process instability
 - Sensor / detection gap
-- Mechanical wear
-- System integration issue
+- Mechanical wear / misalignment
+- Interface / communication failure
 - Human operation error
-- Transfer / positioning issue
-- Shared-line conflict or readiness gap
-
-## 1.3 Failure Chain Logic
-Small issue → misalignment → drop → stacking → collision → defect
-
-## 1.4 Troubleshooting Priority Logic
-1. Mold / mechanical side
-2. Transfer / positioning
-3. Sensor / detection
-4. Control / actuator
-5. Process condition / margin
-6. Human operation
-7. Automation / IT / routing / SFIS (if automation line)
+- False alarm / false clear
+- Capacity / readiness mismatch
 
 ---
 
-# 2. STATION TRAINING KNOWLEDGE
+# 2. First Rule: Physical Reality Before Signal
 
-## 2.1 Water Clean
-### General understanding
-- Core Water Clean process is relatively stable.
-- Water Clean is not the main core-risk station by default.
+Before trusting alarm / PLC / software / system status, always check:
 
-### Main watch points
-- Loader / unloader aging
-- Transfer interface stability
-- Scanner robustness
-- Carrier code compatibility
+- Is the panel really out?
+- Is the carrier really cleared?
+- Is the conveyor / lift / ULD really moving?
+- Is downstream really ready?
+- Is the sensor detecting real position or only a partial-clear condition?
+- Was alarm cleared on machine only, or also on system?
 
-### Rule
-Do not over-assign downstream issues to Water Clean unless:
-- there is real surface evidence, or
-- handshake / transfer logic clearly points back to Water Clean
-
-### Chemical / filter control
-- N600: replace every 2 weeks
-- Filter: replace/check every 1–2 weeks
+## Key principle
+**Physical reality > system assumption**
 
 ---
 
-## 2.2 CPF
-### General understanding
-CPF main failure mode is **glue-related instability**, not direct collision.
+# 3. Standard Troubleshooting Order
 
-### Main watch points
-- Glue overflow
-- Dot weight instability
-- Valve / chamber wear
-- Process margin sensitivity
-- Nozzle validation / trial status
+When issue happens, check in this order:
 
-### Rule
-FAI pass does not guarantee stable process margin.
+1. Physical blockage / mechanical / transfer
+2. Sensor / detection / false clear
+3. Control / actuator / interlock
+4. Interface / handshake / communication
+5. Process condition / margin / material
+6. Human operation / reset / manual override / post-maintenance effect
+7. Capacity / readiness / automation efficiency (if relevant)
 
 ---
 
-## 2.3 Molding
-### General understanding
-Molding is a multi-module system:
-- handling
-- transfer
-- press
+# 4. Quick Classification Guide
+
+| Symptom | First suspect |
+|---|---|
+| panel dropped / popped out / carrier collision | false clear / no feedback / manual override |
+| machine OK but system shows error | sync gap / false alarm |
+| FAI fail right after maintenance | release gap / alignment / optimize not finished |
+| CT high but no quality NG | transfer path / sequence / automation efficiency |
+| residue / peeling / edge defect while machine all OK | process interaction / material / upstream |
+| intermittent 2D reader fault | focus / tuning / scanner stability |
+| DC power alarm | DC module / clamp / cathode / contamination |
+| transmission timeout in Sputter | belt / coupling / motor / driver / tray jam |
+| corner crack / scratch / burr at cutting | blade gap / blade cycle / panel flatness |
+| no obvious alarm but jam / impact occurs | unsafe manual handling / hidden transfer mismatch |
+
+---
+
+# 5. High-Risk Failure Chains
+
+## 5.1 False Clear Chain
+Panel or carrier is still physically inside, but system thinks it is already out.
+
+### Result
+- carrier drop
+- panel pop-out
+- collision
+- panel stuck between stations
+
+### Typical trigger
+- out sensor positioned too early
+- no second verification
+- logic clears by signal only
+
+---
+
+## 5.2 Downstream Fail But Upstream Still Run
+Downstream station is abnormal, but fault status is not returned to upstream.
+
+### Result
+- upstream continues transfer
+- conveyor / lift not moving
+- panel drops or jams between stations
+
+### Typical example
+- Lift fault but Laser keeps transferring
+- ULD / conveyor stopped while table still moves
+
+---
+
+## 5.3 Manual Override During Auto Sequence
+Operator / DL / PD resets alarm or changes Auto / Manual when product is not yet fully cleared.
+
+### Result
+- auto sequence breaks
+- table continues movement with product still inside
+- panel pop-out / carrier drop / collision
+
+### Prevention
+- block mode change during transfer
+- confirm panel fully cleared before reset
+- add double confirm or interlock
+
+---
+
+## 5.4 System False Alarm / Sync Mismatch
+Machine is physically OK, but upper system / SMD / box still shows ERROR.
+
+### Result
+- false escalation
+- noisy dashboard
+- low trust in system state
+
+### Typical causes
+- transient fault recovers too quickly
+- clear state not updated to upper layer
+- no debounce / no clear logic
+
+---
+
+## 5.5 Post-Maintenance Release Gap
+Maintenance was done, but:
+- alignment not fully restored
+- optimization not finished
+- EQ / ME / QA not all confirmed
+- PD still runs FAI
+
+### Result
+- FAI fail
+- cut shift / cross deviation
+- avoidable scrap
+
+### Prevention
+- machine release gate
+- no action based on email / verbal only
+- system status confirmation before FAI
+
+---
+
+## 5.6 Capacity / CT High
+Machine quality result is OK, but automatic mode CT is much higher than target.
+
+### Result
+- capacity loss
+- bottleneck
+- UPD high
+- wrong judgment if only output quality is checked
+
+### Typical causes
+- extra load / unload / transfer path
+- too many intermediate motion steps
+- poor motion sequence
+- non-optimized automation logic
+
+---
+
+# 6. Station-Specific Quick Checklists
+
+## 6.1 Water Clean
+Check:
+- loader / unloader status
+- scanner robustness
+- carrier code compatibility
+- transfer stability
+
+Do not over-assign downstream issue to Water Clean without:
+- real surface evidence
+- clear handshake / transfer relation
+
+---
+
+## 6.2 CPF
+Check:
+- glue overflow
+- dot weight
+- valve / chamber wear
+- nozzle validation
+- process margin
+
+Remember:
+- FAI pass does not guarantee stable process margin
+
+---
+
+## 6.3 Molding
+Check:
+- transfer pressure / transfer time
 - vacuum
-- pellet / compound supply
+- mold surface
+- contamination / foreign material
+- pellet / compound condition
+- mold-side abnormality before assuming machine-side issue
 
-### Core troubleshooting logic
-- If transfer pressure/time deviates:
-  - suspect mold incomplete
-  - suspect foreign material in mold
-  - suspect abnormal force condition inside mold
-
-- If vacuum is abnormal:
-  - suspect mold side first
-  - do not default to machine side first
-
-- If machine runs but output is NG:
-  - check mold surface first
-
-### Restart / FAI rule
-- If no input > 12 hours → redo FAI before restart
-
-### Model change rule
-Must verify:
-- mold chase
-- PR set
-- recipe
-
-### Maintenance / startup concern
-Missing proper mold cleaning / smoothing / conditioning before FAI can create hidden mold surface risk.
+Rules:
+- vacuum abnormal → check mold side first
+- if no input > 12 hours → redo FAI before restart
+- if machine runs but output NG → check mold surface first
 
 ---
 
-## 2.4 Laser
-### Machine platform understanding
-There are 2 laser machine families:
-- Hans
-- E&R
+## 6.4 Laser / ULD / Lift / Conveyor
+Check:
+- panel fully out or not?
+- out sensor positioned too early?
+- ULD / lift / conveyor really running?
+- downstream fault fed back to laser or not?
+- any manual mode switch during transfer?
+- any reset without physical verification?
+- any post-maintenance alignment or release issue?
+- vision mark detection / CT / lens / Z-focus / power stability
 
-These are different manufacturers, but they use the same type of laser source.
-
-### Station architecture
-Laser machine includes:
-- load / unload
-- dust extraction
-- cooling
-- laser head
-- working table
-
-### Key technical learning
-Most critical areas:
-1. Laser head
-2. Working table
-
-Hardest technical task:
-- Adjusting the optical path of laser light
-
-### Laser source / lifecycle
-- Source power around 40 W
-- Model Hades uses around 34 W
-- Re-calibration every 6 months or when running a new model
-- >35,000 hours: inspect / prepare replacement
-- >40,000 hours: mandatory replacement
-
-### Software / control
-Laser uses 2 software groups:
-- laser source control
-- machine control
-
-Known source control data:
-- Spectra software
-- current frequency setting learned: 102000 Hz
-
-### Traceability
-- Directly linked to SFIS
-- No need to manually input code
-- Uses DataMatrix code
-
-### Utility
-- Water cooling required to reduce laser head temperature
+Typical recurring chains:
+- panel not fully out + table still move
+- lift NG + no feedback to laser
+- ULD jam recovery without physical-clear confirmation
+- FAI run before machine release after maintenance
 
 ---
 
-## 2.5 Dry Ice / Trench Dry Ice / Cutting DIC
-### General understanding
-Dry Ice system is not just the nozzle.
-It is a full system including:
-- gas / CDA / N2
-- dry ice source
-- nozzle / robot
-- vacuum / pedestal
-- magazine transfer
-- scanner / software / SFIS / alarm pages
+## 6.5 LT Dry Ice / Cutting Dry Ice / Dry Ice
+Check:
+- scanner / reader focus
+- lane A vs lane B difference
+- carrier / conveyor actual position
+- SMD / machine state mismatch
+- blade / nozzle / weight / output consistency
+- intermittent issue or full fail?
+- Cold Jet / blade / nozzle / vacuum / pedestal
 
-### Rule
-Cold Jet pressure / output must not be adjusted freely outside spec.
-
-### Alarm / troubleshooting thinking
-Priority groups:
-- Cold Jet / dry ice / output
-- safety door / interlock
-- magazine detect
-- vacuum / pedestal condition
-- SFIS / communication
-- code reading / scanner
+Remember:
+- Dry Ice is a full system, not nozzle only
 
 ---
 
-## 2.6 Jigsaw
-### Vendor PM logic
-Jigsaw follows vendor-defined lifetime-based PM logic.
+## 6.6 Jigsaw / Saw
+Check:
+- blade cycle count
+- nozzle-to-panel gap
+- panel flatness / curvature
+- blade-side error mapping
+- test by bare panel
+- scratches / dimension / vision stop relation
+- blade / brush / table condition
 
-### Confirmed control points
-- Machine 58: blade change around 700 panels
-- Other machines: blade change around 500 panels
-- Blade thickness noted: 0.63 mm
-- Table calibration: every 3 months
-- Cleaning brush replacement: every 108000 runs
-- Brush material: plastic
-- Brush function: remove saw debris during cleaning
-
-### Cleaning water
-- RO water is 100% fresh
-- No recycle
-- Used water is discharged directly
-
-### Risk logic
-If blade / chuck / table condition is not controlled:
-- crack risk
-- burr risk
-- hidden defect risk
-- machine may still look normal while process quality is already out of control
+If symptom is:
+- scratches on PCB surface
+- dimension fail
+- edge burr
+- corner crack
+Then always compare:
+- blade life
+- nozzle gap
+- panel curvature
+- chuck / spindle / table condition
 
 ---
 
-## 2.7 Process Flow Rules Learned
-- LTE must pass CDIC cleaning
-- GPS does not need CDIC and can go directly to Sputter
-- Any lot exceeding Q-time before Sputter must be cured again
+## 6.7 Sputter (MUST HAVE)
+
+### 6.7.1 DC Power Alarm
+Check:
+- which DC channel alarmed (DC1 / DC4 / DC5 / DC7 …)
+- measured DC output value vs normal reference
+- cathode separation condition
+- clamp condition
+- whether product / tray NG exists or not
+
+Typical pattern:
+- cathode OK
+- DC output abnormal
+- replace DC module → recover
+
+### 6.7.2 Cathode / Clamp / Peeling
+Check:
+- cathode short or not
+- clamp surface roughness / peeling
+- contamination / conductive debris
+- chamber contamination
+- DC power relation
+
+Typical pattern:
+- clamp degradation / peeling
+→ cathode short
+→ DC power alarm
+
+### 6.7.3 Transmission Timeout / CHx Path
+Check:
+- tray physically stuck or not
+- belt / coupling / motor / driver
+- fixing screw integrity
+- transmission guide wear
+- driver communication error
+
+Typical pattern:
+- coupling loose because fixing screw damaged
+- rubbing over time
+- disengagement
+- timeout + communication alarm
+
+### 6.7.4 Emergency Stop / EMO
+Check:
+- electrical power distribution
+- front / rear cabinet power state
+- EMO button position
+- whether shutdown is safety-triggered or equipment-triggered
+
+Typical pattern:
+- machine shutdown
+- no equipment fault
+- EMO pressed by human operation
+
+### 6.7.5 Chamber / Surface / Cleaning Vendor
+If chamber-related or peeling-related issue repeats:
+- review cleaning vendor quality
+- review roughness spec
+- check shield / clamp / cathode contamination
+- verify updated part source
 
 ---
 
-# 3. TROUBLESHOOTING ISSUE HISTORY BY DATE
-
-> Note:
-> Only dates clearly stated or later explicitly confirmed in the chat are assigned here.
-
----
-
-## 2026-06-01
-
-### Issue: Panel dropped inside machine during LBO run
-**Machine:** #232  
-**Symptom:**
-- One panel dropped inside machine during production
-
-**Mechanism:**
-- SMD lift malfunctioned
-- Laser did not receive the corresponding error signal
-- Transfer continued
-- Panel fell to the machine bottom
-
-**Issue type:**
-- Sensor / Control / Transfer / Interlock
-
-**Impact:**
-- Panel drop
-- Potential panel damage
-- Missing machine stop condition
-- Interlock / handshake gap
-
-**Action / learning direction:**
-- Need to verify lift-to-laser error signal communication
-- Need to block downstream transfer if upstream lift is abnormal
-- Treat as integration / control issue, not simple mechanical fault only
+## 6.8 Automation / Capacity
+Check:
+- process time vs transfer time
+- auto path vs manual path
+- extra buffer / mechanism steps
+- load/unload bottleneck
+- vendor motion optimization need
+- manual fallback path
 
 ---
 
-## 2026-06-11
+# 7. Quick Checks by Failure Type
 
-### Issue: Laser232 / lift drop communication case
-**Symptom:**
-- Lift abnormality did not stop transfer logic
-- Panel dropped between machine modules
+## Mechanical / Transfer
+- remove jam and inspect physically
+- verify all moving parts free
+- check product / carrier still inside zone or not
+- confirm real position, not system position only
 
-**Mechanism:**
-- Communication / interlock gap between lift abnormality and laser process continuation
+## Sensor / Detection
+- confirm detect point
+- check if signal turns ON too early
+- check focus / vision / image quality
+- compare lane A vs lane B if applicable
 
-**Issue type:**
-- Control / Interface / Sensor / Transfer
+## Control / Interface
+- verify handshake between modules
+- confirm downstream ready signal exists
+- check if upstream is blocked when downstream NG
+- validate reset / clear logic
 
-**Impact:**
-- Product drop
-- Repeat risk if signal mapping not corrected
+## Process / Material
+- compare lot / upstream state
+- check edge-only / corner-only pattern
+- verify cosmetic / adhesion / residue / contamination
+- confirm if all machine condition is in spec
 
----
-
-## 2026-06-13
-
-### Follow-up / maintenance note
-**Items captured:**
-- Checked conveyor maintenance items
-- Checked CPF glue replacement
-- Machine 158 Press 2 force around 54 ton
-- Laser PLC logic for loader / unloader signal was modified and re-tested
-
-**Issue type examples present:**
-- Control logic modification
-- Process parameter observation
-- Preventive maintenance follow-up
-
----
-
-## 2026-06-15
-
-### Laser Hans training note
-**Main learning focus:**
-- PLC logic for loader / unloader signal
-- Retest after logic modification
-
-**Broader technical capture added that day:**
-- Hans + E&R machine family knowledge
-- Laser optical path is hardest adjustment
-- Calibration and source replacement rules
-- Laser software structure
-- SFIS direct link
-- Water cooling requirement
+## Human / Operation
+- any manual reset?
+- any auto / manual switch?
+- any action during transfer?
+- any missed PM / release / confirmation step?
+- any EMO / safety trigger by operator?
 
 ---
 
-## 2026-06-18
-
-### Molding / mold change / FR4 readiness
-**Symptom / note:**
-- Mold chase / mold change before FR4 run still under follow-up
-
-### Oven issue
-**Symptom:**
-- Over-temperature protection issue
-- If setup too low, oven cannot reach required temperature
-
-**Issue type:**
-- Control / Utility / Process
-
-### Water Clean issue
-**Symptom:**
-- Carrier QR codes not consistent
-- Scanner new unit not yet available
-- Current containment: carrier classification
-
-**Issue type:**
-- Scanner / Detection / Process control
-
-### Laser 222
-**Symptom:**
-- Cold Jet out of spec
-- Adjusted and FAI OK
-
-**Issue type:**
-- Process / Dry Ice / parameter recovery
-
-### Jig Saw
-**Symptom:**
-- Product code cannot be read
-- Note points toward DIC cleaning / surface cleanliness influence
-
-**Issue type:**
-- Detection / Surface / Process interaction
-
-### Automation Hades update
-- Inline Plasma machines have arrived at USI
-- Installation / layout in progress
-- One planned before Molding
-- One planned before CPF
-
----
-
-## 2026-06-22
-
-### Training focus: Cutting / Trench Dry Ice / manual operation / parameter logic
-**Main learning:**
-- Startup flow
-- Parameter pages
-- Alarm detail
-- Running log
-- Maintenance page
-- Scanner / InteChip / software interaction
-
-### Plasma 3
-- Setup completed
-
-### Auto shuttle
-- Fault recovered, status noted OK
-
-### Laser cutting
-**Symptom:**
-- Dust collector hose was bent
-
-**Issue type:**
-- Utility / Exhaust / dust collection
-
-### Sputter
-**Symptom:**
-- Reassembled part but screw was loose
-
-**Issue type:**
-- Mechanical fastening
-
-### DL2
-- FAI + check sheet mentioned for first shift
-
-### Strong learning of the day
-- Cold Jet pressure is not allowed to be modified freely
-- Must troubleshoot based on spec, dust collector condition, vacuum / pedestal condition, and alarm logic
-
----
-
-## 2026-06-23
-
-### Plasma 2
-- Setup completed
-
-### WC79
-**Symptom:**
-- Scanner connection abnormality
-
-**Issue type:**
-- Scanner / Connection / Detection
-
-### Laser 153
-- 6-month PM completed
-- No special issue found
-
-### Dry Ice 22
-- Mask replaced
-- Check OK
-- Check sheet completed
-
-### Automation line
-- Laser stress test was performed
-
-### Saw 58
-**Symptom:**
-- Handling / output-side issue was noted
-- Exact mechanism not finalized in note
-
-### SOP / DCN
-**Learning confirmed:**
-- Any new check sheet / verification item / form revision must be updated through DCN-controlled document release
-- Each controlled form must have:
-  - document number
-  - revision version
-  - controlled release
-- During FAI / checklist execution, each item must be checked only after actual verification is completed
-
-### Sputter
-- Full set of internal screws replaced
-
----
-
-## 2026-06-24
-
-### Mold 146
-**Symptom:**
-- Pin dropped from mold
-- Risk of falling onto mold chase surface and causing damage
-
-**Containment / action:**
-- Glue was applied to re-fix the pin
-- Daily monitoring in place
-
-**Issue type:**
-- Mechanical / mold protection / hidden damage risk
-
-### CPF
-**Symptom:**
-- Z-axis abnormality
-
-**Issue type:**
-- Axis / mechanical / control
-
-### Laser 230
-- Quarterly PM performed
-- Actual CT around 11–15 seconds
-
-### Hades auto line / Laser CB
-**Symptom:**
-- Cannot detect PCB mark
-
-**Issue type:**
-- Vision / detection / alignment / control
-
-### TDIC #43
-**Symptom:**
-- Vacuum / dust filter issue
-
-**Issue type:**
-- Utility / vacuum / cleaning
-
-### Plasma 3
-- QR scanner optimization ongoing
-
----
-
-## 2026-06-25
-
-### Plasma 2 – automation line
-**Symptom:**
-- Base orientation reversed
-- Requires modification
-
-**Commitment / target:**
-- Must complete modification and run by 2026-07-01
-
-**Issue type:**
-- Mechanical integration / installation
-
-### WC37
-**Symptom:**
-- Pressure drop observed
-- Nozzle confirmed not clogged
-
-**Issue type:**
-- Utility / pressure / flow
-
-### Laser
-**Symptom:**
-- PD broke cooling water connector
-- Connector replaced and machine recovered OK
-
-**Issue type:**
-- Human / mechanical / utility
-
-### Cold Jet tuning
-- FAI = 167 kg
-- Actual peak = 172
-
-### SFIS / Baymax / TCP-IP
-**Function under integration:**
-- Plasma automation line to send product data string to system through Baymax via TCP/IP
-
-**Issue type:**
-- IT / integration / traceability
-
----
-
-## 2026-06-26
-
-### WC
-- Checked 1M / 3M / 6M PM items
-
-### TDIC
-- Cold Jet changed from #22 to #26
-- Checked dry ice pipe
-- Cleaned nozzle
-
-### Key symptom learned for #22
-**Symptom:**
-- #22 often drops dry ice output / weight below spec
-- No hardware or software change was made
-
-**Issue type:**
-- Process / Utility / Intermittent
-
-**Mechanism learned:**
-- likely flow instability instead of fixed hardware failure
-- strong suspects:
-  - dry ice quality variation
-  - partial freezing
-  - air fluctuation
-
-### Jig Saw
-- PM with belt check
-
-### CDIC
-- Checked tool / part / mask / pedestal
-
-### Dry run
-- 10:00 started Molding 157 + robot dry run
-- Initially only 10% because Plasma 2 setup not complete
-- 10:30 marked done
-
-### Laser CB
-**Symptom:**
-- One machine still contributes to higher CT
-
-### Plasma 3
-**Symptom:**
-- SFIS software still not fully fixed
-
-### 14:34
-- Shifted work focus to CPF auto line
-
----
-
-## 2026-06-29
-
-### Mold 147 / Press 2
-**Symptom:**
-- Abnormal during cleaning while preparing for Automation Hades FRB
-- Press isolated and stopped from use
-- Root cause investigation ongoing
-
-**Issue type:**
-- Mechanical / mold / cleaning abnormality
-
-### Jig Saw line stability
-- FAI at 10:30 showed no issue
-- Machine 58 and 72 were running small model
-- 4 sets available, currently 3 sets for C10
-- Blade management confirmed:
-  - machine 58 ~700 panel per blade change
-  - others ~500 panel per blade change
+# 8. Validated Training / Knowledge Snapshot
+
+## 8.1 Water Clean
+- Core Water Clean process is relatively stable
+- Main concerns:
+  - loader / unloader aging
+  - transfer interface
+  - scanner robustness
+  - carrier compatibility
+- N600: replace every 2 weeks
+- Filter: replace / check every 1–2 weeks
+
+## 8.2 CPF
+- Main CPF risk is glue-related instability
+- FAI pass does not mean process margin is stable
+
+## 8.3 Molding
+- Multi-module system:
+  - handling
+  - transfer
+  - press
+  - vacuum
+  - pellet / compound
+- Transfer abnormal → suspect mold-side incomplete / contamination / force abnormality
+- Vacuum abnormal → mold side first
+- Model change → verify mold chase / PR set / recipe
+
+## 8.4 Laser
+- Main technical focus:
+  - laser head
+  - working table
+  - optical path
+- Laser source:
+  - recalibration every 6 months
+  - inspect / prepare replacement after ~35,000 hours
+  - mandatory replacement after ~40,000 hours
+- Direct link to SFIS
+- DataMatrix used
+- Water cooling required
+
+## 8.5 Dry Ice / LT Dry Ice / Cutting Dry Ice
+- Not only nozzle:
+  - CDA / N2
+  - dry ice source
+  - nozzle / robot
+  - vacuum / pedestal
+  - magazine / carrier / conveyor
+  - scanner / SMD / SFIS
+- Cold Jet pressure must not be adjusted freely outside spec
+
+## 8.6 Jigsaw
+- Machine 58: blade ~700 panels
+- Other machines: blade ~500 panels
 - Blade thickness: 0.63 mm
 - Table calibration: every 3 months
 - Brush replacement: every 108000 runs
-- RO fresh cleaning water, no recycle
+- RO water is 100% fresh
 
-### Process flow confirmation
-- LTE must go CDIC
-- GPS can go direct to sputter
-- Over Q-time before sputter → curing required
-
-### Line status
-- By 14:00 all WIP below saw had been cleared
-- Automation line bypass run showed no issue
-- At that time plasma and sputter load/unload were not running
-
----
-
-# 4. AUTOMATION / SFIS / SHARED-LINE INTEGRATION
-
-## 4.1 Plasma 3 SFIS
-### Confirmed status
-- Plasma 3 can send data to SFIS
-- Machine-side software behavior became normal
-- IT still has not completed route / routing on system side
-- Therefore, station still cannot be fully online
-
-### Interface path learned
-- Baymax ↔ machine
-- TCP/IP
-- product string / data sending to system
-
-### Main issue type
-- IT / routing / integration / readiness
-
-### Impact
-- Traceability incomplete
-- Online station cannot be fully released
-- Shared automation ramp risk remains
+## 8.7 Sputter
+Validated recurring lessons:
+- DC module failure can cause alarm even when cathode itself is OK
+- Clamp / cathode peeling can trigger short + DC power alarm
+- Transmission timeout can be linkage between:
+  - mechanical jam
+  - coupling loose
+  - motor / driver issue
+- EMO cases must be separated from equipment fault cases
 
 ---
 
-## 4.2 Dry run plan logic learned
-### Time slots learned
-- 09:00–11:00 → Molding to trench / AVI side
-- 13:00–14:00 → Plasma to CPF unload
-- 15:00–16:30 → Carrier / laser flow
-- Additional flow includes sputter side depending on line slot
+# 9. Validated June-to-Now Snapshot (Frequently Reused)
 
-### Control method
-For each run, need to record:
-- actual start time
-- actual end time
-- normal running time
-- issue time
-- total input quantity
+These lessons were repeatedly reused in chat and should remain easy to find:
 
-### Support logic
-- PD collects PCB and records time / issues
-- EQ / Automation / SMD guide operation, issue handling, manual fallback
+## Laser / Transfer / Automation
+- Lift / ULD communication gap can cause panel drop if downstream fault is not returned upstream
+- Laser transfer / ULD / conveyor issues often fail by:
+  - false clear
+  - manual override
+  - no panel-clear double check
+  - no feedback signal
+- Post-maintenance release gap can create FAI fail / cut shift even when machine “looks maintained”
+- Machine can be physically OK while system / sequence is still unsafe
 
----
+## Dry Ice / LT Dry Ice / Cutting Dry Ice
+- WC / scanner / carrier QR mismatch was a real process-control issue
+- Lane reader unstable is often a tuning / focus / blur issue rather than full scanner breakdown
+- SMD false alarm can occur while machine is physically normal
 
-# 5. WATCH / HANA CONTEXT LEARNED IN CHAT
+## Jigsaw / Saw
+- Blade-nozzle gap + blade cycle + panel curvature are recurring root chains for:
+  - scratches
+  - dimension fail
+  - vision stop
+  - corner crack
 
-## 5.1 Watch context
-Main watch items repeatedly appearing in chat:
-- Cold Jet #22 output instability
-- Laser CT instability due to vision NG
-- Plasma 3 SFIS not online because IT routing not finished
-- Jigsaw blade / brush lifetime control
-- Mold 147 Press 2 abnormality under monitoring
-- Dry run control and manual fallback readiness
+## Sputter
+- DC1 / DC4 / DC5 / DC7 alarms are recurring power-side patterns
+- CHB / transmission timeouts can be mechanical linkage issues, not only sensor errors
+- Clamp surface quality and peeling are critical repeat causes
+- Emergency stop (EMO) must be treated as human safety operation unless evidence says equipment fault
 
-## 5.2 Hana context
-Hana shares line / resource context with Watch.
-
-### Known readiness principles captured
-- Majority of machine capability is already available
-- Vacuum baking is an exception requiring transfer
-- Some EE lab tools are missing / long lead time (~8 weeks), such as:
-  - J-Link Pro
-  - I2C/SPI shifter board
-  - Battery simulator
-  - Chamber
-
-### Risk themes
-- shared-capacity conflict
-- equipment readiness gap
-- transfer dependency
-- ramp delay risk
+## June line-specific notes often referenced
+- Cold Jet #22 intermittent output drop likely tied to dry ice quality / freezing / air fluctuation
+- Plasma 3 SFIS send OK but routing not complete = not fully online
+- Mold 147 Press 2 abnormal during cleaning remained open
+- Laser CB CT increase linked to machine-specific cannot-detect / vision behavior
+- Jigsaw blade / brush / table control directly affects stable quality
 
 ---
 
-# 6. ISSUE-TYPE LIBRARY DERIVED FROM CHAT
+# 10. Watch / Hana Quick Context
 
-## 6.1 Mechanical
-- Mold pin drop
-- Loose screw after reassembly
-- Cooling water connector break
-- Dust hose bent
-- Base installed in reverse direction
-- Jigsaw wear / brush / blade / table condition
+## Watch
+When issue relates to Watch, emphasize:
+- repeat issue risk
+- CT / bottleneck effect
+- machine stability trend
+- dry-run / manual fallback
+- integration / online readiness
 
-## 6.2 Electrical / Control
-- Loader / unloader PLC logic modification
-- Signal handshake gap between lift and laser
-- Z-axis abnormality
-- software not fully sending / routing data
-
-## 6.3 Sensor / Detection
-- PCB mark cannot be detected
-- Vision NG drives CT increase
-- Scanner connector abnormality
-- Product code cannot be read
-- QR code inconsistency
-
-## 6.4 Process
-- Cold Jet unstable output
-- Kgs / output drift below spec
-- vacuum / dust filter issue
-- molding transfer / vacuum / mold-side logic
-- glue instability in CPF
-- Water Clean surface / scanner compatibility
-
-## 6.5 IT / Integration
-- SFIS routing not done
-- Baymax TCP-IP string send path
-- online station not completed
-- Agent knowledge retrieval limitation
-
-## 6.6 Utility
-- pressure drop
-- CDA fluctuation
-- dust collection weakness
-- RO water standard
-- oven setup / over-temp logic
-
-## 6.7 Planning / Capacity / Readiness
-- Hana shares resources with Watch
-- transfer lead item exists
-- some lab / validation items have long lead time
-- dry run readiness and manual fallback planning required
+## Hana
+When issue relates to Hana, also check:
+- share line with Watch
+- share machine / capacity conflict
+- readiness
+- transfer / new buy / long lead item risk
 
 ---
 
-# 7. TROUBLESHOOTING PATTERNS CAPTURED FOR AGENT USE
-
-## 7.1 Cold Jet / dry ice output drop pattern
-### Symptom
-- kg or effective output below spec
-- no obvious HW/SW change
-- intermittent
-
-### Top suspect
-1. dry ice quality variation
-2. partial freezing in pipe/nozzle
-3. real-time air fluctuation
-
-### Quick check
-- change dry ice block
-- purge before run
-- compare real-time pressure, not setup only
-- run repeated cycles
-
-### Prevention
-- add repeatability check before release
-- log kg trend by shift / machine
-
----
-
-## 7.2 Mold abnormal during cleaning
-### Symptom
-- abnormality happens during cleaning / prep, not necessarily during MP run
-
-### Top suspect
-1. contamination / residue
-2. loose element / pin problem
-3. mold-side mechanical interaction
-
-### Action
-- isolate first
-- do not continue running blindly
-- inspect mold-side surface / loose hardware
-- monitor after temporary fix
-
----
-
-## 7.3 Vision-driven CT increase
-### Symptom
-- one unit in laser line causes higher CT
-- linked with cannot-detect / vision NG
-
-### Top suspect
-1. mark detect instability
-2. camera / alignment / optics issue
-3. product cleanliness / contrast issue
-
-### Action
-- separate CT by machine
-- correlate with vision NG log
-- verify mark condition / camera condition
-
----
-
-# 8. OPEN ITEMS STILL NOT CLOSED IN CHAT
-
-## Open / under follow-up
-- Mold 147 Press 2 root cause
-- Plasma 3 IT routing to complete online release
-- Laser CB CT root cause per machine
-- WC37 pressure drop real root cause
-- CPF Z-axis abnormality
-- TDIC #43 vacuum / dust filter issue
-- Hades auto line PCB mark detect issue
-
----
-
-# 9. REPORTING TEMPLATE DERIVED FROM CHAT
-
-## Short reporting format
-- Issue
-- Impact
-- Root Cause
-- Action
-- Risk
+# 11. Standard Short Output Format
 
 ## Troubleshooting format
 - Symptom
 - Failure mechanism
+- Related history
 - Top suspected causes
 - Quick checks
 - Containment
 - Prevention
 
----
-
-# 10. NOTES FOR REPO USE
-
-## Recommended section anchors
-Example GitHub links after upload:
-- `#cold-jet-22`
-- `#mold-147--press-2`
-- `#plasma-3-sfis`
-- `#2026-06-25`
-- `#issue-type-library-derived-from-chat`
-
-These anchors can be used for:
-- precise linking in reports
-- agent grounding
-- line-by-line knowledge navigation
+## Report format
+- Issue
+- Impact
+- Root Cause
+- Action
+- Risk
+- Next step / owner
 
 ---
-# END OF FILE
+
+# 12. Incident Conversion Guidance
+
+When user asks to “send code” or “convert issue”:
+
+## Code 1
+Row for `incidents/README.md`
+
+## Code 2
+Path:
+```text
+incidents/YYYY/file-name.md
+## Code 3
+Detail markdown file with:
+
+Issue
+Timeline
+Symptom
+Root Cause
+Failure Mechanism
+Actions
+Preventive
+Current Status
+Impact
+Open Risk
+Evidence
+
+Mandatory rule for Code 1
+The last column must always be:./2026/file-name.md And Code 1 / Code 2 must match 100% slug.
+# 13. Open Items Still Not Closed
+
+Mold 147 Press 2 root cause
+Plasma 3 IT routing completion
+Laser CB CT root cause per machine
+WC37 pressure drop root cause
+CPF Z-axis abnormality
+TDIC #43 vacuum / dust filter abnormality
+Hades auto-line PCB mark detect issue
+
+
+# 14. Final Reminder
+At BE line:
+
+do not trust signal before physical confirmation
+do not conclude machine broken before checking process / sensor / interface / human cause
+always compare with related history before concluding or creating a new incident
