@@ -553,7 +553,7 @@ When user asks to “send code” or “convert issue”:
 Row for-incidents/README.md
 ## Code 2
 Path:
-```text-incidents/YYYY/file-name.md
+text-incidents/YYYY/file-name.md
 ## Code 3
 Detail markdown file with:
 
