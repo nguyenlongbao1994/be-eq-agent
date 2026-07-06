@@ -233,40 +233,79 @@ When issue is unclear, prioritize:
 ## 2.4 Laser
 
 ### Machine family
-Two main machine types:
-- Hans
-- E&R
+Trạm Laser hiện sử dụng **2 loại máy chính**:
+- **E&R (LM series)**: LM-101AL, LM-101LT, LM-201LC
+- **Hans (CL series)**: HNDZ-CL4030 và các máy Hans cùng họ CL/FPC
 
-These use the same laser source type but are different machine families.
+=> Khi troubleshooting hoặc viết incident, phải **xác nhận rõ machine family là E&R hay Hans** trước khi kết luận nguyên nhân hoặc tham chiếu manual.
 
 ### Main machine structure
-- load / unload
-- dust extraction
-- cooling
-- laser head
-- working table
+#### E&R
+- Load / Laser / Unload
+- Một số cấu hình có AOI riêng
+- XY table
+- CCD alignment
+- 2D code reader / tray mapping / handler interface
+- Dust extraction / vacuum / chiller / ion air
+
+#### Hans
+- PLC / panel / software control
+- XY working table
+- CCD / mark / template / 2D teaching
+- Laser control software
+- Conveyor / stopper / clamp / vacuum cylinder
+- Chiller / dust filtering / safety door / interlock
 
 ### Critical technical focus
-- laser head
-- working table
-- optical path
-
-### Lifecycle / calibration rule
-- Recalibration every 6 months
-- Recalibration required when running a new model
-- >35,000 hours: inspect / prepare replacement
-- >40,000 hours: mandatory replacement
+- laser head / optical path
+- XY table / motion repeatability
+- CCD / mark / 2D / template
+- cooling / chiller / water quality
+- vacuum / dust extraction / airflow
+- transfer / loader-unloader / interface with handler
+- software file / traceability / logging
 
 ### Software / traceability
-- Laser source control software
-- Machine control software
-- Spectra frequency learned in training: 102000 Hz
-- Direct link to SFIS
-- DataMatrix used
-- No manual code input required
+#### E&R
+- dùng flow teaching theo DXF
+- hỗ trợ Fiducial teaching
+- hỗ trợ 2D teaching
+- có Operator / Engineer / Supervisor mode
+- có log, account setting, parameter setting
+- liên quan trực tiếp đến mapping / 2D / handler-laser interface
 
-### Utility
-- Water cooling required for laser head
+#### Hans
+- dùng phần mềm HansLCS / HansSoft
+- hỗ trợ file dxf / plt / hs và các định dạng hình ảnh
+- hỗ trợ barcode / QR / DataMatrix
+- có CCD operation, BOX calibration, offset calibration
+- có user management và log vận hành
+- phù hợp cho marking / cutting / split / auto alignment
+
+### Operation / calibration / teaching
+#### Common logic
+- phải kiểm tra đúng file sản phẩm / template / mark / 2D rule trước khi chạy
+- phải kiểm tra safety door, vacuum, khí nén, chiller, dust exhaust trước run
+- sau model change hoặc setup mới phải verify:
+  - alignment
+  - mark
+  - 2D
+  - auto-run path
+  - file / template đúng theo machine family
+
+#### E&R watch points
+- DXF teaching
+- Fiducial mark teaching
+- 2D teaching
+- orientation teaching
+- auto/online-offline logic
+- parameter enable/disable theo chức năng máy
+
+#### Hans watch points
+- calibration bắt buộc trước marking/cutting
+- CCD calibration / offset correction / BOX calibration là cốt lõi
+- template / mark / focus / file format phải đúng
+- user Hans system có logic riêng, tránh sửa sai quyền hạn
 
 ### High-risk failure families in Laser
 - post-maintenance alignment release gap
@@ -274,6 +313,90 @@ These use the same laser source type but are different machine families.
 - ULD / lift / conveyor communication gap
 - manual override during transfer
 - CT / vision instability
+- mark / CCD / template mismatch
+- 2D read fail / duplicate code / wrong mapping
+- chiller / cooling instability
+- dust extraction / vacuum effectiveness drop
+
+### Main troubleshooting groups
+- laser source / controller not ready
+- 2D code read error
+- duplicate 2D code
+- mark / positioning / CCD capture issue
+- motion card / servo / driver / I/O issue
+- stage / home / limit / origin mismatch
+- safety door / interlock abnormal
+- software-not-ready / wrong file / path / exchange folder / SFIS issue
+- vacuum / air / clamp / cylinder state abnormal
+- chiller / water / cooling alarm
+
+### Quick checks
+1. Confirm machine family first: **E&R or Hans**
+2. Physical reality first:
+   - product clear?
+   - conveyor / stopper / clamp / table position normal?
+3. Check utility:
+   - power / air / chiller / dust exhaust / vacuum
+4. Check sensor / detection:
+   - mark / 2D / door / in-position / CCD / reader connectivity
+5. Check control / interface:
+   - Handler ↔ Laser I/O
+   - software path / exchange folder / SFIS
+6. Check recipe / file / teaching:
+   - DXF / hs / template / ROI / score / calibration file
+7. Check post-maintenance / post-model-change release gap
+
+### Maintenance
+#### Daily
+- check cooling fan / abnormal sound
+- check air pressure / vacuum status
+- check safety door function
+- clean dust collector outer area
+- verify ion / airflow / dust extraction
+- check conveyor foreign objects / belt damage / motor noise
+- check XY table / servo abnormal sound
+- verify nozzle / suction / fixture / kit cleanliness
+- check sensor cleanliness and response
+
+#### Weekly
+- check safety labels / tower light / monitor
+- check dust filter condition
+- check dust hose / airflow
+- clean all sensors
+- clean and lubricate ballscrew / moving mechanism
+- clean optical scale / CCD lens / CCD body
+- check vacuum solenoid / tube leakage
+- check stopper / pusher / cylinder looseness
+- check conveyor belt tension
+
+#### Quarterly
+- inspect pressure gauges / muffler / solenoid / air tubing / fittings
+- clean vacuum pump exterior
+- clean fan / dust collector / filter bin
+- lubricate slide rail / screw / linkage / cylinder / linear bush
+- check motor belt tightness
+
+### Lifecycle / calibration rule
+- recalibration every 6 months
+- recalibration required when running a new model
+- high precision use requires more frequent alignment / box / offset review
+
+### Rule for incident / repository
+Khi ghi incident hoặc update knowledge cho trạm Laser, bắt buộc thêm:
+- **Machine family: E&R / Hans**
+- **Model**
+- **Software / template type (nếu biết)**
+- **manual tham chiếu đúng theo loại máy**
+
+### Interpretation rule
+Laser issue không nên default là laser source fault.
+Ưu tiên phân tích theo thứ tự:
+- transfer / interface / readiness
+- CCD / mark / 2D / template
+- motion / servo / I/O / control card
+- utility / chiller / vacuum / dust
+- software / file / SFIS / exchange path
+- chỉ sau đó mới nghi laser head / optical source
 
 ---
 
