@@ -1,36 +1,55 @@
-# BE EQ Knowledge Base
+# BE EQ Agent Knowledge Base
 
-Repository này dùng làm **knowledge base cho BE EQ troubleshooting, báo cáo, đào tạo và theo dõi tích hợp automation line**.
+Repository này là nguồn dữ liệu chính cho **BE EQ troubleshooting, incident conversion, reporting, training và pattern analysis**.
 
-Mục tiêu chính:
-- Lưu tri thức kỹ thuật cho dây chuyền BE
-- Gom issue history, failure pattern và action logic
+Mục tiêu:
+- Hỗ trợ kỹ sư line debug issue nhanh hơn
+- Chuẩn hóa cách mô tả symptom / mechanism / root cause / action
+- Dùng làm knowledge source cho Agent / Copilot
+- Hạn chế trả lời generic, nhầm case, hoặc reuse dữ liệu cũ
 - Hỗ trợ phân tích cho **Watch** và **Hana**
-- Làm nguồn dữ liệu để Agent/Copilot trả lời theo logic EQ thực tế
 
 ---
 
-## 1. Main BE Process Flow
+## 1. Repository này dùng để làm gì
 
+Repository này không chỉ lưu issue history.  
+Repository này phải giúp kỹ sư và Agent:
+
+1. hiểu đúng **failure mechanism**
+2. phân biệt **machine failure** với:
+   - process instability
+   - sensor / detection gap
+   - interface / communication failure
+   - human operation error
+3. tái sử dụng **failure patterns** đã từng xảy ra
+4. viết report / incident / troubleshooting note theo cùng một chuẩn
+5. tránh:
+   - nhầm case
+   - reuse case cũ
+   - lệch slug giữa incident register và file detail
+
+---
+
+## 2. Core BE Principle
+
+### 2.1 Main Process Flow
 Water Clean → Baking → Plasma → Molding → Laser → Dry Ice → Plasma → CPF → Curing → Jigsaw → Tape → Sputter → AVI
 
----
-
-## 2. Core Troubleshooting Principle
-
+### 2.2 Main Troubleshooting Principle
 Phần lớn lỗi **không phải machine breakdown**.
 
 Nguồn lỗi chính thường đến từ:
 - Process instability
 - Sensor / detection gap
-- Mechanical wear
+- Mechanical wear / misalignment
 - System integration issue
 - Human operation error
 - Transfer / positioning issue
+- Interface / communication failure
 
-Failure chain thường gặp:
-
-Small issue → misalignment → drop → stacking → collision → defect
+### 2.3 Typical Failure Chain
+Small issue → misalignment → false clear / wrong transfer → drop / stacking / collision → defect
 
 ---
 
@@ -84,16 +103,37 @@ Phân loại readiness nên theo 4 nhóm:
 ## 5. Repository Structure
 
 ### README.md
-Tóm tắt tổng quan, watch point và điều hướng
-
-### troubleshooting.md
-Lịch sử issue, symptom, mechanism, root cause, quick check, action
-
-### knowledge_db.md
-Tri thức chuẩn hóa theo station / equipment / process / automation / project
+Tổng quan repository, governance dữ liệu, rule sử dụng và điều hướng file
 
 ### instruction.md
-Logic trả lời và tư duy troubleshooting cho Agent
+Rule cho Agent / Copilot:
+- cách suy luận
+- cách đọc case mới
+- cách tránh reuse case cũ
+- cách tạo incident code
+- cách kiểm tra duplicate
+
+### knowledge_db.md
+Tri thức chuẩn hóa theo:
+- station
+- equipment / process
+- failure patterns
+- automation / integration
+- Watch / Hana context
+
+### troubleshooting.md
+Playbook line-ready:
+- quick check
+- failure chain
+- troubleshooting order
+- report format
+- incident conversion rule
+
+### `incidents/README.md`
+Master incident register
+
+### `incidents/YYYY/*.md`
+Mỗi issue thực tế = **1 file markdown riêng**
 
 ---
 
@@ -101,10 +141,11 @@ Logic trả lời và tư duy troubleshooting cho Agent
 
 Use this repository for:
 - Daily / weekly BE EQ reporting
-- Issue review and troubleshooting reference
+- Incident review and troubleshooting reference
 - Training new engineers / PD support
 - Watch / Hana readiness review
-- Automation / SFIS integration follow-up
+- Automation / SFIS / interface follow-up
+- Converting images / slides into incident markdown
 
 ---
 
@@ -129,40 +170,75 @@ Use this repository for:
   - working table
   - optical path
 - Có liên kết SFIS và yêu cầu cooling control
+- Transfer / ULD / lift / conveyor interface là nguồn rủi ro lớn
+- Out signal có thể “clear” nhưng panel chưa thật sự ra khỏi table
 
-### Dry Ice / Trench Dry Ice
+### Dry Ice / LT Dry Ice / Cutting Dry Ice
 - Không chỉ là nozzle
-- Phải nhìn cả dry ice source, CDA, vacuum, magazine, scanner, SFIS
+- Phải nhìn cả:
+  - dry ice source
+  - CDA
+  - vacuum
+  - magazine / carrier / conveyor
+  - scanner / SMD / status sync
 
 ### Jigsaw
 - Lifetime control rất quan trọng
 - Blade / brush / cleaning water ảnh hưởng trực tiếp đến quality
+- Blade-nozzle gap và panel flatness có thể gây scratch / vision stop / dimension issue
+
+### Sputter
+- DC power / cathode / clamp / chamber contamination là pattern quan trọng
+- Transmission / coupling / belt / motor / timeout cũng là recurring pattern
 
 ---
 
-## 8. Current Data Rule
+## 8. Data Governance Rules
 
-- Chỉ dùng dữ liệu đã được xác nhận trong note / chat / training
+### 8.1 Only validated data
+- Chỉ dùng dữ liệu đã được xác nhận trong:
+  - image
+  - note
+  - log
+  - training
+  - report
 - Không tự suy đoán root cause nếu chưa có evidence
-- Khi không có dữ liệu xác nhận, phải ghi rõ:
-  - `Data not available in current knowledge`
 
----
+### 8.2 If data is missing
+Khi không có dữ liệu xác nhận, phải ghi rõ:
+- `Data not available in current knowledge`
 
-## 9. Next Expansion
+### 8.3 Duplicate Check Rule
+Trước khi tạo incident mới:
+1. Check với case ngay trước đó
+2. So machine / station / mechanism / issue chain
+3. Nếu cùng machine + cùng mechanism → kiểm tra xem có phải repeat issue
+4. Nếu khác machine nhưng cùng mechanism → mention “related pattern”
 
-Possible future files:
-- `watch_status.md`
-- `hana_readiness.md`
-- `issue_library.md`
-- `.github/copilot-instructions.md`
+### 8.4 Incident Link Rule
+Trong `incidents/README.md`, cột cuối luôn dùng relative link:
+```md
+./2026/2026-06-11-laser232-panel-dropped.md
+## 9. Agent Rules Summary
+Agent phải:
 
----
+đọc case mới từ đầu
+không reuse machine/date/slug từ case trước
+ưu tiên physical reality before system assumption
+phân biệt:
+
+Machine issue
+Process issue
+Sensor / false clear
+Interface / no feedback
+Human override / manual reset
+Capacity / readiness issue
 
 ## 10. Maintainer Note
-
 This repository is intended to support practical BE EQ work:
-- real line troubleshooting
-- real report writing
-- real automation risk follow-up
-- real project readiness comparison between Watch and Hana
+
+real line troubleshooting
+real report writing
+real automation risk follow-up
+real project readiness comparison between Watch and Hana
+incident standardization for Agents
