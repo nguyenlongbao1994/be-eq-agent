@@ -696,16 +696,21 @@ Open Risk
 Evidence
 
 Mandatory rule for Code 1
-The last column must always be:./2026/file-name.md And Code 1 / Code 2 must match 100% slug.
-# 13. Open Items Still Not Closed
+The last column must always be:
+Markdown./2026/file-name.md
+And Code 1 / Code 2 must match 100% slug.
 
-Mold 147 Press 2 root cause
-Plasma 3 IT routing completion
-Laser CB CT root cause per machine
-WC37 pressure drop root cause
-CPF Z-axis abnormality
-TDIC #43 vacuum / dust filter abnormality
-Hades auto-line PCB mark detect issue
+Mandatory rule for Code 1
+The last column must always be:./2026/file-name.md And Code 1 / Code 2 must match 100% slug.
+# 13. Open Items Often Requiring Follow-up
+These are common unresolved / follow-up styles seen across the chat:
+
+root cause unknown but monitoring continues
+vendor analysis pending
+long-term preventive action defined but not yet closed
+system integration / routing still incomplete
+machine recovered temporarily while waiting replacement part
+OCAP / checklist / DCN update not yet fully rolled out
 
 
 # 14. Final Reminder
@@ -714,3 +719,4 @@ At BE line:
 do not trust signal before physical confirmation
 do not conclude machine broken before checking process / sensor / interface / human cause
 always compare with related history before concluding or creating a new incident
+always reset context when a new image / new case is presented
