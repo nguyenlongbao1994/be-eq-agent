@@ -1193,32 +1193,259 @@ Dry Ice issue không nên default là nozzle issue.
 - only then conclude local hardware failure
 ---
 
-## 2.6 Jigsaw
+## 2.x Jigsaw
 
-### PM / lifetime control
-- Machine 58: blade change around 700 panels
-- Other machines: blade change around 500 panels
-- Blade thickness recorded in chat: 0.63 mm
-- Table calibration: every 3 months
-- Cleaning brush replacement: every 108000 runs
+### Machine family
+Trạm Jigsaw sử dụng cutting equipment với các platform chính:
+- Jigsaw cutting machine (multi-axis cutting system)
+- Spindle option:
+  - 1.8 kW
+  - 2.2 kW
+- Vacuum system:
+  - external vacuum unit 2.2 kW
 
-### Brush
-- Material: plastic
-- Function: remove saw debris
+=> Khi support / viết incident phải ghi rõ:
+- spindle type (1.8 / 2.2 kW)
+- vacuum unit condition
 
-### Cleaning water
-- 100% fresh RO water
-- No recycle
-- Direct discharge after use
+### Understanding
+Jigsaw là trạm **mechanical cutting + motion control + vacuum removal system**.
 
-### Risk
-If blade / chuck / table / nozzle gap condition is not controlled:
-- crack risk
-- burr risk
-- scratch risk
-- hidden defect risk
-- machine may appear normal while quality is already unstable
+Failure không chỉ là “cut không đẹp”, mà thường đến từ:
+- blade condition
+- spindle vibration
+- panel flatness / clamp / vacuum
+- alignment / CCD offset
+- motion axis stability
 
+=> Đây là trạm có ảnh hưởng trực tiếp đến:
+- burr
+- crack
+- scratch
+- edge quality
+- hidden defect
+
+### Core engineering principle
+- Physical reality before signal
+- Cutting issue = combination của:
+  - blade
+  - spindle
+  - table/vacuum
+  - alignment
+  - path/motion
+
+=> Không được default là “blade bad” nếu chưa check:
+- vacuum hold
+- panel flatness
+- alignment offset
+- spindle stability
+- axis deviation
+
+### Main machine structure
+#### Alignment system
+- CCD alignment
+- fiducial detection
+- offset correction
+
+#### Motion system
+- X1 / X2 axis
+- Y1 / Y2 axis
+- Z1 / Z2 axis
+- Theta1 / Theta2 (rotation)
+- MY1 / MY2 (auxiliary axis)
+
+=> Multi-axis coordination quyết định:
+- path accuracy
+- cutting quality
+
+#### Cutting system
+- spindle motor (1.8 kW / 2.2 kW)
+- cutting blade
+- wheel cover
+
+#### Table system
+- jig table
+- vacuum holding
+- flatness control
+
+#### Cleaning / debris handling
+- remnant discharge brush
+- debris removal path
+- water / cooling (if equipped)
+
+#### Vacuum system
+- external vacuum unit (2.2 kW)
+- dust / particle removal during cutting
+
+#### Operation system
+- touch panel
+- USB / program input
+- status indicator
+
+### Key technical focus
+- blade wear / sharpness
+- spindle vibration / noise
+- vacuum holding strength
+- panel flatness / warpage
+- alignment accuracy
+- axis position repeatability
+- cutting path correctness
+- debris removal effectiveness
+
+### Startup / operation / shutdown
+#### Startup
+1. Power ON machine + vacuum unit
+2. Confirm air/vacuum normal
+3. Home all axis
+4. Check blade condition
+5. Load program / path
+6. Verify alignment
+7. Dry run (if needed)
+8. Start auto run
+
+#### Operation
+- Monitor:
+  - spindle sound
+  - cutting vibration
+  - debris removal
+  - panel movement
+- Avoid:
+  - manual intervention during cutting
+  - skipping alignment after change
+
+#### Shutdown
+- Stop cutting
+- Turn off spindle
+- Stop vacuum
+- Clean debris
+- Inspect blade and table
+
+### High-risk failure families
+- burr / edge roughness
+- panel crack / micro-crack
+- edge chipping
+- scratch on surface
+- incomplete cut
+- path deviation
+- vibration-induced defect
+- vacuum failure → panel movement
+- debris accumulation → secondary scratch
+- misalignment → wrong cut position
+
+### Main failure mechanism
+Typical Jigsaw chain:
+
+blade wear / vacuum weak / panel not flat  
+→ vibration / displacement during cut  
+→ uneven force / mis-cut / debris accumulation  
+→ burr / crack / scratch / hidden defect  
+
+Another pattern:
+
+alignment offset / wrong path  
+→ cut position shifted  
+→ product NG or latent defect
+
+### Quick checks
+1. Physical check first:
+   - panel flat?
+   - vacuum holding OK?
+   - jig stable?
+   - debris accumulated?
+
+2. Blade / spindle:
+   - blade worn?
+   - spindle noise abnormal?
+   - vibration present?
+
+3. Alignment:
+   - CCD detect correct?
+   - offset changed?
+   - fiducial clear?
+
+4. Motion:
+   - axis jitter?
+   - repeatability issue?
+   - path correct?
+
+5. Vacuum / debris:
+   - vacuum unit running?
+   - suction enough?
+   - dust collector blocked?
+
+6. Process condition:
+   - wrong program?
+   - wrong product?
+   - after blade change / maintenance?
+
+7. Post-maintenance check:
+   - alignment redone?
+   - vacuum restored?
+   - spindle rechecked?
+
+### Maintenance / PM focus
+#### Daily
+- clean table and debris
+- check vacuum unit running
+- check blade condition
+- check abnormal vibration/noise
+- check jig surface
+
+#### Weekly
+- inspect spindle condition
+- inspect axis movement
+- check alignment accuracy
+- inspect vacuum piping / leakage
+- clean dust path
+
+#### Monthly
+- check spindle wear
+- check motor and coupling
+- check axis calibration
+- replace blade if needed
+- inspect vacuum motor performance
+
+### Safety / interlock
+- rotating blade = high injury risk
+- never open cover during cutting
+- vacuum must be on before cutting
+- emergency stop must work correctly
+- avoid manual intervention during auto run
+
+### Lifetime / vendor logic
+- blade = lifetime-controlled item
+- spindle = performance degrade over time
+- vacuum motor = degradation affects yield indirectly
+- axis accuracy = drift over long-term use
+
+=> Vendor logic cần tôn trọng:
+- blade change interval
+- spindle maintenance interval
+- vacuum system maintenance
+
+### Rule for incident / repository
+Khi ghi incident cho Jigsaw, bắt buộc gồm:
+- machine model
+- spindle type (1.8 / 2.2 kW)
+- blade condition
+- vacuum condition
+- alignment status
+- panel type / flatness
+- defect type (burr / crack / scratch / mis-cut)
+- whether issue after maintenance / blade change
+
+### Interpretation rule
+Jigsaw issue không nên default là blade issue.
+
+Ưu tiên phân tích theo thứ tự:
+- vacuum / panel holding / flatness
+- blade / spindle condition
+- alignment / offset
+- motion / axis stability
+- debris / dust removal
+- process / path / setup
+- human / post-maintenance release gap
+- only then conclude hardware failure
 ---
 
 ## 2.7 Sputter
