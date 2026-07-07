@@ -375,36 +375,47 @@ When the user asks to convert a case:
 ---
 
 ## 15. Incident Conversion Rule (STRICT)
+
 When writing incident code:
 
-### Code 1
-Must be the row for `incidents/README.md`
+### Output order (MANDATORY)
+Always generate in this exact order:
+
+1. **Code 2** = canonical file path  
+2. **Code 1** = row for `incidents/README.md`  
+3. **Code 3** = detail markdown  
+
+Reason:
+- `Code 2` must be treated as the **single source of truth** for slug and file name.
+- `Code 1` must be created **from Code 2**, not independently.
+- This prevents missing `.md`, missing `)` or mismatch in `View detail` link.
 
 ### Code 2
-Must be the file path:
-text
-incidents/YYYY/file-name.md
+Must be the file path in this exact format:
+Example: incidents/2026/2026-07-01-spt58-emergency-alarm-to-shut-down-machine.md
+
+### Rule:
+
+Must include full incidents/YYYY/
+Must end with .md
+Must be finalized before writing Code 1
+Once Code 2 is created, do not rename slug later unless all codes are regenerated
+### Code 1
+Must be the row for incidents/README.md
+Hard rule for the last column:
+
+The last column must always be a Markdown link
+Must use exact text:`View detail`(./YYYY/file-name.md)
+Never use:
+
+raw path only
+missing .md
+missing `()`
+broken or partial markdown link
 ### Code 3
-Must be the detail markdown
-Hard rule for Code 1 link
-The last column in Code 1 must always use exact Markdown link text: ./YYYY/file-name.md
-Not raw path only.
-Hard rule for slug consistency
-Code 1 and Code 2 must match 100%
-Example:
+Must be the detail markdown.
 
-Code 1:
-./2026/2026-05-04-wc37-rinse2-tank-heating-solid-abnormal-eqdiw00037.md
-Code 2:
-incidents/2026/2026-05-04-wc37-rinse2-tank-heating-solid-abnormal-eqdiw00037.md
-
-If there is even one-character mismatch, fix before answering.
-Date rule
-
-If user explicitly gives the date key, use the user’s date key
-If source date and user-provided date differ, say so clearly in detail file if needed
-If date is genuinely unavailable, use placeholder only when unavoidable and explicitly state uncertainty
-
+---
 
 ## 16. Answer Style
 Responses must be:
