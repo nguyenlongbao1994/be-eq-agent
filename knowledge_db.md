@@ -1448,22 +1448,377 @@ Jigsaw issue không nên default là blade issue.
 - only then conclude hardware failure
 ---
 
-## 2.7 Sputter
+## 2.x Sputter
 
-### High-risk subsystems
-- DC power modules
-- cathode / clamp
-- chamber contamination
-- transmission / belt / coupling / motor
+### Machine family
+Trạm Sputter hiện uses:
 
-### Typical repeat patterns
-- DCx power alarms
-- cathode short
-- clamp degradation / peeling
-- transmission timeout
-- motor coupling loose
-- chamber contamination after poor surface roughness / cleaning quality
+- **610H**
+  - Inline DC sputter system
+  - Single-chamber / simple transfer
+- **C3350**
+  - Cluster multi-chamber sputter system
+  - DC + RF capable
+  - Multi-module + robot transfer
 
+=> Rule:
+- Luôn xác nhận:
+  - machine (610H / C3350)
+  - chamber/module
+  - DC hay RF mode
+  - recipe stage (single vs multi-step)
+
+---
+
+### Understanding
+Sputter = **Vacuum + Plasma + Deposition (PVD)**
+
+Core dependencies:
+- Vacuum (pressure stability)
+- Cathode / target clamp
+- Plasma ignition stability
+- Gas / flow
+- Substrate position (robot)
+
+=> Failure thường KHÔNG phải recipe ngay từ đầu  
+mà là chain:
+
+small issue  
+→ vacuum / clamp / plasma unstable  
+→ ignition fail / arc / stop  
+→ coating NG / machine stop  
+
+---
+
+### Core engineering principle
+- Physical reality before signal
+
+Các yếu tố quyết định:
+- Clamp contact tốt → plasma ổn định
+- Vacuum đạt spec → plasma ignite được
+- Gas & pressure đúng → deposition stable
+- Robot position đúng → avoid interlock block
+
+=> Không default:
+- coating NG = process issue  
+- Thường là:
+  - clamp loose
+  - vacuum leak
+  - plasma arc
+  - robot not ready
+
+---
+
+### Main machine structure
+
+#### Vacuum system
+- Main chamber
+- Loadlock chamber
+- Rough + turbo pump
+- Pressure sensor (multi-range)
+- Vacuum unit (2.2kW support system)
+
+Critical:
+- vacuum ramp control
+- leak integrity
+
+---
+
+#### Power / Plasma system
+- DC power supply (primary)
+- RF power (C3350 only)
+- Arc suppression
+
+Critical:
+- stable voltage/current ramp
+- arc prevention
+- plasma ignition timing
+
+---
+
+#### Cathode / Target system
+- Target (material)
+- Cathode holder
+- Clamp system
+- Cooling (water)
+
+Critical:
+- clamp tightness
+- contact resistance
+- thermal stability
+
+---
+
+#### Gas system
+- Process gas supply
+- Mass flow control
+- Pressure regulation
+
+---
+
+#### Transfer system
+
+##### 610H
+- Inline transport
+- Simple load-unload
+
+##### C3350
+- Loadlock + transfer robot
+- Multi-chamber routing
+
+Critical:
+- robot home position
+- substrate detect
+- chamber sync
+
+---
+
+#### Control system
+- PLC
+- HMI
+- Interlock logic
+- Alarm system
+
+---
+
+### Machine-specific characteristics
+
+#### 610H
+- Simpler system
+- DC sputter only
+- Less interlock complexity
+
+Key focus:
+- vacuum reaching spec (~ <5E-5 Torr)
+- clamp stability
+- ignition
+
+---
+
+#### C3350
+- Multi-module cluster
+- DC + optional RF
+- Robot synchronization
+
+Key focus:
+- module consistency
+- interlock + robot timing
+- multi-target management
+- vacuum integrity across chambers (~ <2E-5 Torr)
+
+---
+
+### Key process parameters
+- Vacuum level
+- Pumpdown time
+- DC voltage / current
+- RF power (if used)
+- Gas flow rate
+- Chamber pressure
+- Clamp resistance
+- Cooling water temperature / flow
+- Substrate detect timing
+
+---
+
+### Startup sequence
+
+#### Standard
+1. Power ON
+2. Check chiller / cooling water
+3. Check gas supply
+4. Check vacuum system
+5. Pumpdown to target vacuum
+6. Confirm clamp OK
+7. Confirm interlock (door / robot / sensor)
+8. Plasma ignition (gradual ramp)
+9. Run dummy before production
+
+---
+
+### Operation control
+Monitor continuously:
+- plasma stability (no arc spike)
+- vacuum trend
+- DC/RF stability
+- robot movement (C3350)
+- chamber pressure stability
+
+Key abnormal:
+- ignition delay
+- current fluctuation
+- pressure oscillation
+- arc detection
+
+---
+
+### Shutdown sequence
+- stop plasma discharge
+- ramp down power
+- vent chamber safely
+- stop vacuum pump
+- clean chamber / inspect residue
+
+---
+
+### High-risk failure families
+
+#### Plasma
+- plasma not ignite
+- unstable plasma
+- arc (DC / RF)
+
+#### Vacuum
+- vacuum not reached
+- slow pumpdown
+- leak
+
+#### Clamp
+- clamp loose
+- poor contact resistance
+- overheating
+
+#### Transfer
+- robot not home
+- substrate not detected
+- loadlock fail
+
+#### Control
+- interlock mismatch
+- false sensor signal
+
+#### Process
+- coating non-uniform
+- target contamination
+
+---
+
+### Main failure mechanism
+
+#### Pattern 1: Plasma failure
+vacuum not enough / clamp loose  
+→ plasma cannot ignite or arc  
+→ process stop / coating NG  
+
+#### Pattern 2: Transfer issue
+robot not in position / false detect  
+→ interlock block  
+→ chamber cannot start  
+
+#### Pattern 3: Post PM issue
+clamp not re-tight / seal leak  
+→ vacuum unstable  
+→ plasma abnormal  
+
+---
+
+### Quick checks (priority order)
+
+#### 1. Physical
+- clamp tight?  
+- target mounted correct?  
+- chamber leak?  
+
+#### 2. Vacuum
+- reach spec?  
+- pump running stable?  
+- leak suspected?  
+
+#### 3. Clamp system
+- abnormal resistance?  
+- clamp alarm exist?  
+
+#### 4. Plasma / Power
+- DC stable?  
+- arc detected?  
+- RF error (C3350)?  
+
+#### 5. Transfer
+- robot home?  
+- substrate detect OK?  
+- loadlock door closed?  
+
+#### 6. Interlock
+- full sequence satisfied?  
+- no false sensor state?  
+
+#### 7. After maintenance
+- clamp reinstalled?  
+- seal integrity OK?  
+- dummy run completed?  
+
+---
+
+### Maintenance / PM focus
+
+#### Daily
+- check vacuum trend
+- check plasma stability
+- check clamp condition
+- check alarm log
+
+#### Weekly
+- inspect chamber contamination
+- check target wear
+- check robot motion (C3350)
+
+#### Monthly
+- vacuum leak test
+- seal (O-ring) inspection
+- sensor calibration
+- DC/RF system check
+
+---
+
+### Safety / interlock
+- high voltage plasma risk
+- vacuum chamber hazard
+- no open chamber under vacuum
+- no bypass interlock
+- arc detection must be active
+
+---
+
+### Lifetime / vendor logic
+- Target = consumable
+- Clamp degrade over time
+- Seal (O-ring) critical for vacuum
+- Pump performance degrade
+
+=> Must follow:
+- target replacement
+- seal replacement
+- vacuum maintenance cycle
+
+---
+
+### Rule for incident / repository
+Bắt buộc ghi:
+
+- machine (610H / C3350)
+- chamber/module
+- vacuum level
+- clamp status
+- DC/RF status
+- plasma behavior
+- transfer condition
+- defect type
+- timeline (trước/sau PM, recipe change)
+
+---
+
+### Interpretation rule
+Không default sputter issue là process.
+
+Luôn phân tích theo thứ tự:
+
+1. vacuum / leak
+2. clamp / contact
+3. plasma / power
+4. transfer / robot / interlock
+5. chamber contamination
+6. human / post-maintenance release gap
+7. cuối cùng mới conclude hardware failure
 ---
 
 ## 2.8 Process Flow Rules
